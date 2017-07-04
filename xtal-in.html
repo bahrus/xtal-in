@@ -1,0 +1,36 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<dom-module id="xtal-in">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>Hello [[prop1]]!</h2>
+  </template>
+
+  <script>
+    /**
+     * `xtal-in`
+     * Polymer component that curries events with unique, discoverable event names
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class XtalIn extends Polymer.Element {
+      static get is() { return 'xtal-in'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'xtal-in'
+          }
+        };
+      }
+    }
+
+    window.customElements.define(XtalIn.is, XtalIn);
+  </script>
+</dom-module>
