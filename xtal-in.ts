@@ -45,6 +45,9 @@ module xtal.elements{
                     composed:{
                         type: Boolean
                     },
+                    /**
+                     * Applicable only to input handler (for now)
+                     */
                     debounceDuration:{
                         type: Number
                     },
@@ -131,7 +134,11 @@ module xtal.elements{
             onWhenInputChange(val){
                 if(val){
                     if(this.debounceDuration > 0){
-
+                //         if(!this.__inputDebouncer){
+                //         const _this = this;
+                //         this.__inputDebouncer = xtal.elements['debounce'](() => {
+                //             _this.
+                //         }, this.debounceDuration);
                     }else{
                         this.addEventListener('input', this.handleInput)
                     }
