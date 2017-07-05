@@ -56,9 +56,17 @@ var xtal;
                         href: {
                             type: String
                         },
+                        stopPropagation: {
+                            type: Boolean
+                        },
                         /**
                          * The name of the event.  This is the name of the first argument as named here:
                          * https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent
+                         *
+                         * With a large application, naming these events so there is no confusion between different meaning events
+                         * from different elements with the same event name becomes more difficult.
+                         *
+                         * To name the event in a "type-safe way" use "${this.fileName}" or "{$this.resolvedUrl}".
                          */
                         typeArg: {
                             type: String
@@ -108,9 +116,29 @@ var xtal;
                         this.removeEventListener('input', this.handleInput);
                     }
                 }
+                getEventName() {
+                    switch (this.typeArg) {
+                        case '${this.fileName}':
+                            return this.fileName;
+                        case '${this.resolvedUrl}':
+                            return this.resolvedUrl;
+                        default:
+                            return this.typeArg;
+                    }
+                }
+                getGenericHandler() {
+                    return {
+                        bubbles: this.bubbles,
+                        composed: this.composed
+                    };
+                }
                 handleClick() {
+                    if (this.stopPropagation)
+                        event.stopPropagation();
                 }
                 handleInput() {
+                    if (this.stopPropagation)
+                        event.stopPropagation();
                 }
                 computeFileName(resolvedUrl) {
                     //From: https://stackoverflow.com/questions/43638163/get-filename-from-url-and-strip-file-extension

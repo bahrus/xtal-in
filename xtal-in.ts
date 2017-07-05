@@ -7,6 +7,7 @@ module xtal.elements{
         fileName: string | polymer.PropObjectType,
         href: string | polymer.PropObjectType,
         resolvedUrl: string | polymer.PropObjectType,
+        stopPropagation: boolean | polymer.PropObjectType,
         typeArg: string | polymer.PropObjectType,
         whenClick: boolean | polymer.PropObjectType,
         whenInput: boolean | polymer.PropObjectType
@@ -24,7 +25,8 @@ module xtal.elements{
         */
         class XtalIn  extends Polymer.Element  implements IXtalInProperties{
             dispatch: boolean; bubbles: boolean; composed: boolean; href: string;
-            typeArg; string; whenClick: boolean; whenInput: boolean; fileName; resolvedUrl; detailOut;
+            typeArg; string; whenClick: boolean; whenInput: boolean; fileName; resolvedUrl; 
+            detailOut : object; stopPropagation: boolean;
             
             static get properties() : IXtalInProperties{
                 return{
@@ -68,9 +70,17 @@ module xtal.elements{
                     href:{
                         type: String
                     },
+                    stopPropagation:{
+                        type: Boolean
+                    },
                     /**
                      * The name of the event.  This is the name of the first argument as named here:  
                      * https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent
+                     * 
+                     * With a large application, naming these events so there is no confusion between different meaning events 
+                     * from different elements with the same event name becomes more difficult.
+                     * 
+                     * To name the event in a "type-safe way" use "${this.fileName}" or "{$this.resolvedUrl}".
                      */
                     typeArg:{
                         type: String
@@ -122,12 +132,30 @@ module xtal.elements{
                 }
             }
 
-            handleClick(){
+            getEventName(){
+                switch(this.typeArg){
+                    case '${this.fileName}':
+                        return this.fileName;
+                    case '${this.resolvedUrl}':
+                        return this.resolvedUrl;
+                    default:
+                        return this.typeArg;
+                }
+            }
 
+            getGenericHandler() : CustomEventInit{
+                return {
+                    bubbles: this.bubbles,
+                    composed: this.composed
+                } as CustomEventInit
+            }
+
+            handleClick(){
+                if(this.stopPropagation) event.stopPropagation();
             }
 
             handleInput(){
-
+                if(this.stopPropagation) event.stopPropagation();
             }
 
 
