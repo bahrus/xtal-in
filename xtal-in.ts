@@ -134,17 +134,25 @@ module xtal.elements{
             onWhenInputChange(val){
                 if(val){
                     if(this.debounceDuration > 0){
-                //         if(!this.__inputDebouncer){
-                //         const _this = this;
-                //         this.__inputDebouncer = xtal.elements['debounce'](() => {
-                //             _this.
-                //         }, this.debounceDuration);
+                        if(!this.__inputDebouncer){
+                            const _this = this;
+                            this.__inputDebouncer = xtal.elements['debounce'](() => {
+                                this.handleInput();
+                            }, this.debounceDuration);
+                        }
+                        this.addEventListener('input', this.__inputDebouncer);
                     }else{
                         this.addEventListener('input', this.handleInput)
                     }
  
                 }else{
-                    this.removeEventListener('input', this.handleInput);
+                    if(this.debounceDuration > 0){
+                         this.removeEventListener('input', this.__inputDebouncer);
+                    }else{
+                        this.removeEventListener('input', this.handleInput);
+                    }
+                    
+                   
                 }
             }
 
@@ -177,7 +185,12 @@ module xtal.elements{
 
             handleInput(){
                 if(this.stopPropagation) event.stopPropagation();
-
+                const src = event.srcElement as HTMLInputElement
+                const detail = {
+                    name: src.name,
+                    value: src.value,
+                }
+                this.emitEvent(detail);
             }
 
 
