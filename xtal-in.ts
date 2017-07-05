@@ -89,6 +89,10 @@ module xtal.elements{
                         type: Boolean,
                         observer: 'onWhenInputChange'
                     },
+                    /**
+                     * An expression pointing to where to place the results of the detail object after bubbling through
+                     * applicable event handlers.
+                     */
                     detailOut:{
                         type: Object,
                         notify: true,
