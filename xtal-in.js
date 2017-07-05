@@ -30,6 +30,9 @@ var xtal;
                         composed: {
                             type: Boolean
                         },
+                        debounceDuration: {
+                            type: Number
+                        },
                         /**
                          * Custom event dispatching enabled only when this attribute is present (or property is true)
                          */
@@ -69,7 +72,7 @@ var xtal;
                          * To name the event in a "type-safe way" use "${this.fileName}" or "{$this.resolvedUrl}".
                          */
                         typeArg: {
-                            type: String
+                            type: String,
                         },
                         /**
                          * Dispatch click events
@@ -110,7 +113,11 @@ var xtal;
                 }
                 onWhenInputChange(val) {
                     if (val) {
-                        this.addEventListener('input', this.handleInput);
+                        if (this.debounceDuration > 0) {
+                        }
+                        else {
+                            this.addEventListener('input', this.handleInput);
+                        }
                     }
                     else {
                         this.removeEventListener('input', this.handleInput);
@@ -126,15 +133,19 @@ var xtal;
                             return this.typeArg;
                     }
                 }
-                getGenericHandler() {
-                    return {
+                emitEvent(detail) {
+                    const newEvent = new CustomEvent(this.getEventName(), {
+                        detail: detail,
                         bubbles: this.bubbles,
                         composed: this.composed
-                    };
+                    });
+                    this.dispatchEvent(newEvent);
                 }
                 handleClick() {
                     if (this.stopPropagation)
                         event.stopPropagation();
+                    const detail = {};
+                    this.emitEvent(detail);
                 }
                 handleInput() {
                     if (this.stopPropagation)
@@ -150,7 +161,14 @@ var xtal;
                 }
             }
         }
-        //if type-arg="${this.fileName}"
+        const syncFlag = 'xtal_elements_in_sync';
+        if (window[syncFlag]) {
+            customElements.whenDefined('poly-prep-sync').then(() => initXtalIn());
+            delete window[syncFlag];
+        }
+        else {
+            customElements.whenDefined('poly-prep').then(() => initXtalIn());
+        }
     })(elements = xtal.elements || (xtal.elements = {}));
 })(xtal || (xtal = {}));
 //# sourceMappingURL=xtal-in.js.map

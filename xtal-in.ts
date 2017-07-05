@@ -2,6 +2,7 @@ module xtal.elements{
     interface IXtalInProperties{
         bubbles: boolean | polymer.PropObjectType,
         composed: boolean | polymer.PropObjectType,
+        debounceDuration: number | polymer.PropObjectType,
         detailOut: object | polymer.PropObjectType,
         dispatch: boolean | polymer.PropObjectType,
         fileName: string | polymer.PropObjectType,
@@ -26,8 +27,8 @@ module xtal.elements{
         class XtalIn  extends Polymer.Element  implements IXtalInProperties{
             dispatch: boolean; bubbles: boolean; composed: boolean; href: string;
             typeArg; string; whenClick: boolean; whenInput: boolean; fileName; resolvedUrl; 
-            detailOut : object; stopPropagation: boolean;
-            
+            detailOut : object; stopPropagation: boolean; debounceDuration: number;
+            __inputDebouncer;
             static get properties() : IXtalInProperties{
                 return{
                     /**
@@ -43,6 +44,9 @@ module xtal.elements{
                      */
                     composed:{
                         type: Boolean
+                    },
+                    debounceDuration:{
+                        type: Number
                     },
                     /**
                      * Custom event dispatching enabled only when this attribute is present (or property is true)
@@ -83,7 +87,7 @@ module xtal.elements{
                      * To name the event in a "type-safe way" use "${this.fileName}" or "{$this.resolvedUrl}".
                      */
                     typeArg:{
-                        type: String
+                        type: String,
                     },
                     /**
                      * Dispatch click events
@@ -126,7 +130,12 @@ module xtal.elements{
 
             onWhenInputChange(val){
                 if(val){
-                    this.addEventListener('input', this.handleInput)
+                    if(this.debounceDuration > 0){
+
+                    }else{
+                        this.addEventListener('input', this.handleInput)
+                    }
+ 
                 }else{
                     this.removeEventListener('input', this.handleInput);
                 }
@@ -143,19 +152,25 @@ module xtal.elements{
                 }
             }
 
-            getGenericHandler() : CustomEventInit{
-                return {
+
+            emitEvent(detail: object){
+                const newEvent = new CustomEvent(this.getEventName(), {
+                    detail: detail,
                     bubbles: this.bubbles,
                     composed: this.composed
-                } as CustomEventInit
+                } as CustomEventInit);
+                this.dispatchEvent( newEvent)
             }
 
             handleClick(){
                 if(this.stopPropagation) event.stopPropagation();
+                const detail = {};
+                this.emitEvent(detail);
             }
 
             handleInput(){
                 if(this.stopPropagation) event.stopPropagation();
+
             }
 
 
@@ -171,5 +186,11 @@ module xtal.elements{
         }
 
     }
-    //if type-arg="${this.fileName}"
+    const syncFlag = 'xtal_elements_in_sync'
+    if(window[syncFlag]){
+        customElements.whenDefined('poly-prep-sync').then(() => initXtalIn());
+        delete window[syncFlag];
+    }else{
+        customElements.whenDefined('poly-prep').then(() => initXtalIn());
+    }
 }
