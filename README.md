@@ -1,6 +1,17 @@
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/bahrus/xtal-in)
+
 # \<xtal-in\>
 
-Polymer component that curries events with unique, discoverable event names
+Polymer component that curries events with semantically meaningful, and even unique, discoverable event names.
+
+In the [groundbreaking blog post "Custom Elements That Work Anywhere"](http://robdodson.me/interoperable-custom-elements/), Rob Dodson blegs:
+
+> **In general, don't bubble events unless they are semantically meaningful.** For example, *changed* is not a very semantically
+> meaningful event, whereas *document-opened* would be. Non-semantic events can leak up and another element may accidentally handle them.  
+
+This element, \<xtal-in\>, makes it easy to declaratively curry a standard click or input event into a user defined event name. One can also automatically generate a unique event name in a typesafe, discoverable way, by referring to a relatie url or TypeScript filename (e.g.), which might contain a guid identifier.  
+
+One can also declaratively configure whether the event should bubble, and even bubble outside the shadow DOM boundary via the composed flag.
 
 ## Install the Polymer-CLI
 
