@@ -14,6 +14,7 @@ var xtal;
             * @demo demo/index.html
             */
             class XtalIn extends Polymer.Element {
+                static get is() { return 'xtal-in'; }
                 static get properties() {
                     return {
                         /**
@@ -155,6 +156,7 @@ var xtal;
                         composed: this.composed
                     });
                     this.dispatchEvent(newEvent);
+                    this['_setDetailOut'](newEvent);
                 }
                 handleClick() {
                     if (this.stopPropagation)
@@ -181,6 +183,7 @@ var xtal;
                     return this.resolvedUrl(href);
                 }
             }
+            customElements.define(XtalIn.is, XtalIn);
         }
         const syncFlag = 'xtal_elements_in_sync';
         if (window[syncFlag]) {

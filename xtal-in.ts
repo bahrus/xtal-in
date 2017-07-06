@@ -29,6 +29,7 @@ module xtal.elements{
             typeArg; string; whenClick: boolean; whenInput: boolean; fileName; resolvedUrl; 
             detailOut : object; stopPropagation: boolean; debounceDuration: number;
             __inputDebouncer;
+            static get is(){return 'xtal-in';}
             static get properties() : IXtalInProperties{
                 return{
                     /**
@@ -174,7 +175,8 @@ module xtal.elements{
                     bubbles: this.bubbles,
                     composed: this.composed
                 } as CustomEventInit);
-                this.dispatchEvent( newEvent)
+                this.dispatchEvent(newEvent);
+                this['_setDetailOut'](newEvent);
             }
 
             handleClick(){
@@ -205,6 +207,8 @@ module xtal.elements{
             }
         }
 
+        customElements.define(XtalIn.is, XtalIn);
+    
     }
     const syncFlag = 'xtal_elements_in_sync'
     if(window[syncFlag]){
