@@ -4,12 +4,12 @@ module xtal.elements{
         composed: boolean | polymer.PropObjectType,
         debounceDuration: number | polymer.PropObjectType,
         detailOut: object | polymer.PropObjectType,
-        dispatch: boolean | polymer.PropObjectType,
+        //dispatch: boolean | polymer.PropObjectType,
         fileName: string | polymer.PropObjectType,
         href: string | polymer.PropObjectType,
         resolvedUrl: string | polymer.PropObjectType,
         stopPropagation: boolean | polymer.PropObjectType,
-        typeArg: string | polymer.PropObjectType,
+        dispatchTypeArg: string | polymer.PropObjectType,
         whenClick: boolean | polymer.PropObjectType,
         whenInput: boolean | polymer.PropObjectType
     }
@@ -26,7 +26,7 @@ module xtal.elements{
         */
         class XtalIn  extends Polymer.Element  implements IXtalInProperties{
             dispatch: boolean; bubbles: boolean; composed: boolean; href: string;
-            typeArg; string; whenClick: boolean; whenInput: boolean; fileName; resolvedUrl; 
+            dispatchTypeArg; string; whenClick: boolean; whenInput: boolean; fileName; resolvedUrl; 
             detailOut : object; stopPropagation: boolean; debounceDuration: number;
             __inputDebouncer;
             static get is(){return 'xtal-in';}
@@ -53,12 +53,6 @@ module xtal.elements{
                         type: Number
                     },
                     /**
-                     * Custom event dispatching enabled only when this attribute is present (or property is true)
-                     */
-                    dispatch:{
-                        type: Boolean
-                    },
-                    /**
                      * A computed property that can be used to uniquely identify events
                      */
                     fileName:{
@@ -82,7 +76,8 @@ module xtal.elements{
                         type: Boolean
                     },
                     /**
-                     * The name of the event.  This is the name of the first argument as named here:  
+                     * Name of the event to use with ustom event dispatching.  
+                     * This is the name of the first argument as described here:  
                      * https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent
                      * 
                      * With a large application, naming these events so there is no confusion between different meaning events 
@@ -90,7 +85,7 @@ module xtal.elements{
                      * 
                      * To name the event in a "type-safe way" use "${this.fileName}" or "{$this.resolvedUrl}".
                      */
-                    typeArg:{
+                    dispatchTypeArg:{
                         type: String,
                     },
                     /**
@@ -158,13 +153,13 @@ module xtal.elements{
             }
 
             getEventName(){
-                switch(this.typeArg){
+                switch(this.dispatchTypeArg){
                     case '${this.fileName}':
                         return this.fileName;
                     case '${this.resolvedUrl}':
                         return this.resolvedUrl;
                     default:
-                        return this.typeArg;
+                        return this.dispatchTypeArg;
                 }
             }
 

@@ -9,9 +9,37 @@ In the [groundbreaking blog post "Custom Elements That Work Anywhere"](http://ro
 > **In general, don't bubble events unless they are semantically meaningful.** For example, *changed* is not a very semantically
 > meaningful event, whereas *document-opened* would be. Non-semantic events can leak up and another element may accidentally handle them.  
 
-This element, \<xtal-in\>, makes it easy to declaratively curry a standard click or input event into a user defined event name. One can also automatically generate a unique event name in a typesafe, discoverable way, by referring to a relatie url or TypeScript filename (e.g.), which might contain a guid identifier.  
+This element, \<xtal-in\>, makes it easy to declaratively curry a standard click or input event into a user defined event name. One can also automatically generate a unique event name in a typesafe, discoverable way, by referring to a relative url or TypeScript filename (e.g.), which might contain a guid identifier.  
 
 One can also declaratively configure whether the event should bubble, and even bubble outside the shadow DOM boundary via the composed flag.
+
+<!--
+```
+<custom-element-demo>
+  <template>
+    <link rel="import" href="../xtal-in-sync.html">
+    <xtal-in when-click dispatch-type-arg="hello" bubbles composed>
+        <button>Click to dispatch custom event</button>
+    </xtal-in>
+    <script>
+    document.body.addEventListener('hello', e =>{
+        alert('received hello message');
+    })
+    </script>
+  </template>
+</custom-element-demo>
+```
+-->
+```html
+<xtal-in when-click dispatch-type-arg="hello" bubbles composed>
+<button>Click to dispatch custom event</button>
+</xtal-in>
+<script>
+document.body.addEventListener('hello', e =>{
+    alert('received hello message');
+})
+</script>
+```
 
 ## Install the Polymer-CLI
 

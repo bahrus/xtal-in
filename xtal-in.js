@@ -38,12 +38,6 @@ var xtal;
                             type: Number
                         },
                         /**
-                         * Custom event dispatching enabled only when this attribute is present (or property is true)
-                         */
-                        dispatch: {
-                            type: Boolean
-                        },
-                        /**
                          * A computed property that can be used to uniquely identify events
                          */
                         fileName: {
@@ -67,7 +61,8 @@ var xtal;
                             type: Boolean
                         },
                         /**
-                         * The name of the event.  This is the name of the first argument as named here:
+                         * Name of the event to use with ustom event dispatching.
+                         * This is the name of the first argument as described here:
                          * https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent
                          *
                          * With a large application, naming these events so there is no confusion between different meaning events
@@ -75,7 +70,7 @@ var xtal;
                          *
                          * To name the event in a "type-safe way" use "${this.fileName}" or "{$this.resolvedUrl}".
                          */
-                        typeArg: {
+                        dispatchTypeArg: {
                             type: String,
                         },
                         /**
@@ -140,13 +135,13 @@ var xtal;
                     }
                 }
                 getEventName() {
-                    switch (this.typeArg) {
+                    switch (this.dispatchTypeArg) {
                         case '${this.fileName}':
                             return this.fileName;
                         case '${this.resolvedUrl}':
                             return this.resolvedUrl;
                         default:
-                            return this.typeArg;
+                            return this.dispatchTypeArg;
                     }
                 }
                 emitEvent(detail) {
