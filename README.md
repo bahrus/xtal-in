@@ -32,7 +32,7 @@ One can also declaratively configure whether the event should bubble, and even b
 -->
 ```html
 
-<xtal-in when-click dispatch-type-arg="hello" bubbles composed>
+<xtal-in when-click event-name="hello" bubbles composed>
 <button>Click to dispatch custom event</button>
 </xtal-in>
 <script>
