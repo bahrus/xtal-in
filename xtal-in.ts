@@ -9,7 +9,7 @@ module xtal.elements{
         href: string | polymer.PropObjectType,
         resolvedUrl: string | polymer.PropObjectType,
         stopPropagation: boolean | polymer.PropObjectType,
-        dispatchTypeArg: string | polymer.PropObjectType,
+        eventName: string | polymer.PropObjectType,
         whenClick: boolean | polymer.PropObjectType,
         whenInput: boolean | polymer.PropObjectType
     }
@@ -26,7 +26,7 @@ module xtal.elements{
         */
         class XtalIn  extends Polymer.Element  implements IXtalInProperties{
             dispatch: boolean; bubbles: boolean; composed: boolean; href: string;
-            dispatchTypeArg; string; whenClick: boolean; whenInput: boolean; fileName; resolvedUrl; 
+            eventName; string; whenClick: boolean; whenInput: boolean; fileName; resolvedUrl; 
             detailOut : object; stopPropagation: boolean; debounceDuration: number;
             __inputDebouncer;
             static get is(){return 'xtal-in';}
@@ -76,7 +76,7 @@ module xtal.elements{
                         type: Boolean
                     },
                     /**
-                     * Name of the event to use with ustom event dispatching.  
+                     * Name of the event to use with custom event dispatching.  
                      * This is the name of the first argument as described here:  
                      * https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent
                      * 
@@ -85,7 +85,7 @@ module xtal.elements{
                      * 
                      * To name the event in a "type-safe way" use "${this.fileName}" or "{$this.resolvedUrl}".
                      */
-                    dispatchTypeArg:{
+                    eventName:{
                         type: String,
                     },
                     /**
@@ -153,13 +153,13 @@ module xtal.elements{
             }
 
             getEventName(){
-                switch(this.dispatchTypeArg){
+                switch(this.eventName){
                     case '${this.fileName}':
                         return this.fileName;
                     case '${this.resolvedUrl}':
                         return this.resolvedUrl;
                     default:
-                        return this.dispatchTypeArg;
+                        return this.eventName;
                 }
             }
 

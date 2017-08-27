@@ -61,7 +61,7 @@ var xtal;
                             type: Boolean
                         },
                         /**
-                         * Name of the event to use with ustom event dispatching.
+                         * Name of the event to use with custom event dispatching.
                          * This is the name of the first argument as described here:
                          * https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent
                          *
@@ -70,7 +70,7 @@ var xtal;
                          *
                          * To name the event in a "type-safe way" use "${this.fileName}" or "{$this.resolvedUrl}".
                          */
-                        dispatchTypeArg: {
+                        eventName: {
                             type: String,
                         },
                         /**
@@ -135,13 +135,13 @@ var xtal;
                     }
                 }
                 getEventName() {
-                    switch (this.dispatchTypeArg) {
+                    switch (this.eventName) {
                         case '${this.fileName}':
                             return this.fileName;
                         case '${this.resolvedUrl}':
                             return this.resolvedUrl;
                         default:
-                            return this.dispatchTypeArg;
+                            return this.eventName;
                     }
                 }
                 emitEvent(detail) {
