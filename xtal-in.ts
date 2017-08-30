@@ -3,6 +3,7 @@ module xtal.elements{
         bubbles: boolean | polymer.PropObjectType,
         composed: boolean | polymer.PropObjectType,
         debounceDuration: number | polymer.PropObjectType,
+        dispatch: boolean | polymer.PropObjectType,
         detailOut: object | polymer.PropObjectType,
         //dispatch: boolean | polymer.PropObjectType,
         fileName: string | polymer.PropObjectType,
@@ -51,6 +52,12 @@ module xtal.elements{
                      */
                     debounceDuration:{
                         type: Number
+                    },
+                    /**
+                     * Must be true for any dispatching to take place
+                     */
+                    dispatch:{
+                        type: Boolean
                     },
                     /**
                      * A computed property that can be used to uniquely identify events
@@ -128,6 +135,7 @@ module xtal.elements{
             }
 
             onWhenInputChange(val){
+                if(!this.dispatch) return;
                 if(val){
                     if(this.debounceDuration > 0){
                         if(!this.__inputDebouncer){

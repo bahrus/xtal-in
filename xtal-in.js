@@ -38,6 +38,12 @@ var xtal;
                             type: Number
                         },
                         /**
+                         * Must be true for any dispatching to take place
+                         */
+                        dispatch: {
+                            type: Boolean
+                        },
+                        /**
                          * A computed property that can be used to uniquely identify events
                          */
                         fileName: {
@@ -111,6 +117,8 @@ var xtal;
                     }
                 }
                 onWhenInputChange(val) {
+                    if (!this.dispatch)
+                        return;
                     if (val) {
                         if (this.debounceDuration > 0) {
                             if (!this.__inputDebouncer) {
