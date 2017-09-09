@@ -2,7 +2,7 @@
 
 # \<xtal-in\>
 
-Polymer component that curries events with semantically meaningful, and even unique, discoverable event names.
+\<xtal-in\> is a dependency-free component that curries events with semantically meaningful, and even unique, discoverable event names.
 
 In the [groundbreaking blog post "Custom Elements That Work Anywhere"](http://robdodson.me/interoperable-custom-elements/), Rob Dodson blegs:
 
