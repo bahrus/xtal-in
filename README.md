@@ -32,7 +32,7 @@ One can also declaratively configure whether the event should bubble, and even b
 -->
 ```html
 
-<xtal-in when-click event-name="hello" bubbles composed>
+<xtal-in when-click dispatch event-name="hello" bubbles composed>
 <button>Click to dispatch custom event</button>
 </xtal-in>
 <script>
@@ -40,6 +40,17 @@ document.body.addEventListener('hello', e =>{
     alert('received hello message');
 })
 </script>
+```
+
+TODO:
+
+1)  Be able to avoid having to wrap the element, by allowing css selector
+2)  Support when-attribute-change="some-attribute"
+3)  Support binding for detail
+
+```html
+<xtal-in for="#myTarget" when-attribute-changes="some-attribute" dispatch detail="[[myDetail]]"   event-name="hey-some-attribute-has-new-value" bubbles composed></xtal-in>
+<my-awesome-custom-element id="myTarget" some-attribute="hello"></my-awsome-custom-element>
 ```
 
 ## Install the Polymer-CLI
