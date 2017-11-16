@@ -27,6 +27,14 @@ module xtal.elements {
         dispatch: boolean; bubbles: boolean; composed: boolean; href: string;
         detailOut: object; stopPropagation: boolean; debounceDuration: number; fileName: string;
         eventName: string; whenClick: boolean; whenInput: boolean;
+        _detail: object;
+        _for: string;
+        set for(val){
+            this.setAttribute('for', val);
+        }
+        set detail(val){
+            this._detail = val;
+        }
         __inputDebouncer;
         static get is() { return 'xtal-in'; }
         static get observedAttributes(): string[] {
@@ -92,6 +100,14 @@ module xtal.elements {
                  * Dispatch input events
                  */
                 'when-input',
+                /** @type {String} 
+                 * CSS selector for target element to watch
+                */
+                'for',
+                /** @type {String} 
+                 * Watch for the specified attribute to change
+                */
+                'when-attribute-change'
             ];
         }
 
@@ -131,6 +147,9 @@ module xtal.elements {
                 case 'when-input':
                     this.whenInput = (newValue !== null);
                     this.onWhenInputChange();
+                    break;
+                case 'for':
+                    this._for = newValue;
                     break;
             }
         }

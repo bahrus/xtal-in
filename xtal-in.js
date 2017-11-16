@@ -13,6 +13,12 @@ var xtal;
         * @demo demo/index.html
         */
         class XtalIn extends HTMLElement {
+            set for(val) {
+                this.setAttribute('for', val);
+            }
+            set detail(val) {
+                this._detail = val;
+            }
             static get is() { return 'xtal-in'; }
             static get observedAttributes() {
                 return [
@@ -76,6 +82,14 @@ var xtal;
                      * Dispatch input events
                      */
                     'when-input',
+                    /** @type {String}
+                     * CSS selector for target element to watch
+                    */
+                    'for',
+                    /** @type {String}
+                     * Watch for the specified attribute to change
+                    */
+                    'when-attribute-change'
                 ];
             }
             attributeChangedCallback(name, oldValue, newValue) {
@@ -114,6 +128,9 @@ var xtal;
                     case 'when-input':
                         this.whenInput = (newValue !== null);
                         this.onWhenInputChange();
+                        break;
+                    case 'for':
+                        this._for = newValue;
                         break;
                 }
             }

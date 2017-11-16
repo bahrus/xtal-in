@@ -48,6 +48,7 @@ TODO:
 2)  Support when-attribute-change="some-attribute"
 3)  Support binding for detail
 
+The below markup assumes a library, like Polymer, is present to declaratively set the detail property.  
 ```html
 <xtal-in for="#myTarget" when-attribute-changes="some-attribute" dispatch detail="[[myDetail]]"   event-name="hey-some-attribute-has-new-value" bubbles composed></xtal-in>
 <my-awesome-custom-element id="myTarget" some-attribute="hello"></my-awsome-custom-element>
