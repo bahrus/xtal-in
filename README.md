@@ -15,7 +15,7 @@ If a developer is looking at markup, and sees an event handler, and, heart beati
 
 This element, \<xtal-in\>, makes it easy to declaratively curry a standard click or input event into a user defined event name. One can also automatically generate a unique event name in a typesafe, discoverable way, by referring to a relative url or TypeScript filename (e.g.), which might contain a guid identifier. 
 
-One can also declaratively configure whether the event should bubble, and if it should escape its Shadow DOM cocoon via the composed flag:
+In addition, \<xtal-in\> supports declaratively configuring whether the event should bubble, and if it should escape its Shadow DOM cocoon via the composed flag:
 
 
 ```html

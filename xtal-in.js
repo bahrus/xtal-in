@@ -13,11 +13,37 @@ var xtal;
         * @demo demo/index.html
         */
         class XtalIn extends HTMLElement {
-            set for(val) {
-                this.setAttribute('for', val);
+            getHost() {
+                let parentElement = this.parentElement;
+                while (parentElement) {
+                    if (parentElement.shadowRoot)
+                        return parentElement;
+                    parentElement = parentElement.parentElement;
+                }
             }
-            set detail(val) {
-                this._detail = val;
+            getTarget(selector) {
+                if (!selector)
+                    return null;
+                switch (selector) {
+                    case '_self':
+                        return this;
+                    case '_parent':
+                        return this.parentElement;
+                    case '_host':
+                        return this.getHost();
+                }
+            }
+            set whenClickOn(val) {
+                this.setAttribute('when-click-on', val);
+            }
+            set whenInputtingOn(val) {
+                this.setAttribute('when-inputting-on', val);
+            }
+            set whenAttributeMutates(val) {
+                this.setAttribute('when-attribuge-mutates', val);
+            }
+            set eventDetail(val) {
+                this._eventDetail = val;
             }
             static get is() { return 'xtal-in'; }
             static get observedAttributes() {
@@ -83,13 +109,13 @@ var xtal;
                      */
                     'when-input',
                     /** @type {String}
-                     * CSS selector for target element to watch
+                     * Specify a target to watch click events oh
                     */
-                    'for',
+                    'when-clicking-on',
                     /** @type {String}
-                     * Watch for the specified attribute to change
+                     * Specify a target to watch input events on
                     */
-                    'when-attribute-change'
+                    'when-inputting-on',
                 ];
             }
             attributeChangedCallback(name, oldValue, newValue) {
@@ -129,14 +155,47 @@ var xtal;
                         this.whenInput = (newValue !== null);
                         this.onWhenInputChange();
                         break;
-                    case 'for':
-                        this._for = newValue;
-                        break;
+                }
+            }
+            changeTarget() {
+                this.removeAllEventListeners();
+            }
+            removeAllEventListeners() {
+                this.removeEventListener('click', this.handleClick);
+                this.removeEventListener('input', this.handleInput);
+            }
+            connectAllEventListeners() {
+                this.onWhenClickChange();
+                this.onWhenInputChange();
+                const clickOn = this.getTarget(this.whenClickOn);
+                if (clickOn) {
+                    clickOn.addEventListener('click', this.handleClick);
+                }
+                const inputOn = this.getTarget(this.whenInputtingOn);
+                if (inputOn) {
+                    inputOn.addEventListener('input', this.handleInput);
+                }
+                const attributeMutationTarget = this.getTarget(this.whenAttributeMutates);
+                if (attributeMutationTarget) {
+                    this._mutationObserver = new MutationObserver(mutations => {
+                        mutations.forEach(mutation => {
+                            const detail = {
+                                attributeName: mutation.attributeName,
+                                attributeValue: attributeMutationTarget.getAttribute(mutation.attributeName),
+                            };
+                            let name = (attributeMutationTarget.id || '') + '-';
+                            name += mutation.attributeName + '-changed';
+                            this.emitEvent(detail, name);
+                        });
+                    });
+                    const config = { attributes: true };
+                    // pass in the target node, as well as the observer options
+                    this._mutationObserver.observe(attributeMutationTarget, config);
                 }
             }
             disconnectedCallback() {
-                this.removeEventListener('click', this.handleClick);
-                this.removeEventListener('input', this.handleInput);
+                this.removeAllEventListeners();
+                this._mutationObserver.disconnect();
             }
             onWhenClickChange() {
                 if (!this.dispatch)
@@ -204,8 +263,18 @@ var xtal;
                         return this.eventName;
                 }
             }
-            emitEvent(detail) {
-                const newEvent = new CustomEvent(this.getEventName(), {
+            emitEvent(detail, name) {
+                if (!detail)
+                    detail = {};
+                if (this.eventDetail) {
+                    for (let key in this.eventDetail) {
+                        detail[key] = this.eventDetail[key];
+                    }
+                }
+                let possibleName = this.getEventName();
+                if (!possibleName)
+                    possibleName = name;
+                const newEvent = new CustomEvent(possibleName, {
                     detail: detail,
                     bubbles: this.bubbles,
                     composed: this.composed
@@ -217,7 +286,7 @@ var xtal;
                 if (this.stopPropagation)
                     event.stopPropagation();
                 const detail = {};
-                this.emitEvent(detail);
+                this.emitEvent(detail, null);
             }
             handleInput() {
                 if (this.stopPropagation)
@@ -227,7 +296,7 @@ var xtal;
                     name: src.name,
                     value: src.value,
                 };
-                this.emitEvent(detail);
+                this.emitEvent(detail, null);
             }
             computeFileName(resolvedUrl) {
                 //From: https://stackoverflow.com/questions/43638163/get-filename-from-url-and-strip-file-extension
