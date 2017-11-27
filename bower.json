@@ -1,7 +1,7 @@
 {
   "name": "xtal-in",
   "description": "Polymer component that curries events with unique, discoverable event names",
-  "main": "xtal-in.html",
+  "main": "src/v0/xtal-in.js",
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
     "poly-prep": "bahrus/poly-prep#^0.0.12"
