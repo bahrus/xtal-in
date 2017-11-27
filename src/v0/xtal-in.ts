@@ -57,7 +57,7 @@ module xtal.elements {
 
         _whenAttributeMutates: string;
         set whenAttributeMutates(val: string){
-            this.setAttribute('when-attribuge-mutates', val);
+            this.setAttribute('when-attribute-mutates', val);
         }
 
         _eventDetail: object;

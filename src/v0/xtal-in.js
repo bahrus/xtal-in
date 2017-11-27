@@ -40,7 +40,7 @@ var xtal;
                 this.setAttribute('when-inputting-on', val);
             }
             set whenAttributeMutates(val) {
-                this.setAttribute('when-attribuge-mutates', val);
+                this.setAttribute('when-attribute-mutates', val);
             }
             set eventDetail(val) {
                 this._eventDetail = val;
