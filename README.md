@@ -41,7 +41,7 @@ In this example, add-event-listener attaches a "click" event listener to the par
 In addition to spawning a new event with a semantically meaningful name ("wtf"), one can stop the propagation of the original click event by setting attribute:  stop-propagation.  Note that we specify whether this new semantically meaningful event should bubble and/or escape the shadow DOM cocoon ("composed")
 
 
-You can also specify a test on the element spawning the  the event, using the if-matches attribute, which uses matches() [under the hood](https://developer.mozilla.org/en-US/docs/Web/API/Element/matches):
+You can also specify a test on the element spawning the event, using the if-matches attribute, which uses matches() [under the hood](https://developer.mozilla.org/en-US/docs/Web/API/Element/matches):
 
 ```html
 <div>
@@ -54,7 +54,7 @@ You can also specify a test on the element spawning the  the event, using the if
 </div>
 ```
 
-For a very large application, avoiding collisions between two events that happen to adopt the same name is a little difficult sticking purely to declarative markup, especially compared to the power of JavaScript.  To solve this, you could utilize the xtal-import-export web component defined within the [webcomponents.org/element/bahrus/xtal-method](xtal-method) package.  You could import a global guid constant and export that symbol as your event-name property.
+For a very large application, avoiding collisions between two events that happen to adopt the same name is a little difficult, if sticking purely to declarative markup, especially compared to the power of typed supersets of JavaScript.  To solve this, you could utilize the xtal-import-export web component defined within the [webcomponents.org/element/bahrus/xtal-method](xtal-method) package.  You could import a global guid constant and export that symbol as your event-name property.
 
 ## Renaming
 
@@ -67,6 +67,22 @@ In your head tag, add a [preload tag](https://www.chromestatus.com/features/5762
 ```
 
 Then you can use tl-dr instead of add-event-listener
+
+## Rebounding Properties
+
+In some sense, this documentation is out of order.  The custom element add-event-listener described above, extends the base component, xtal-in-detail, which we've not mentioned yet (cuz it's kind of boring).  This component is also renamable, as described above.  Other names that could be more readable would be bubble-prop, prop-rebound.  It's difficult to see how you would use this component directly, but who knows.
+
+A critical feature of [custom events](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent) is the ability to pass a [detail](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/detail) as part of the event.
+
+xtal-in-detail allows you post an event any time a watched property, detail, changes.  Son in the context of a Polymer template, the markup could look as follows:
+
+```html
+<xtal-in-detail dispatch detail="[[theLatestScandal]]" bubbles composed>
+```
+
+Now if we go back to the first web component, add-event-listener, it inherits this property, so when the button is clicked, it can pass the detail object via binding.
+
+However, this isn't sufficient for many cases.  add-event-listener also allows you to specify  property function, detail-fn, which is passed the triggering event, as well as the detail property.  This user defined function to look at the target element, and formulate a meaningful composite detail object (or promise) based these two parameters.
 
 ======================================   TODO ========================================= 
 
