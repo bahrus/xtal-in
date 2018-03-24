@@ -70,19 +70,19 @@ Then you can use tl-dr instead of add-event-listener
 
 ## Rebounding Properties
 
-In some sense, this documentation is out of order.  The custom element add-event-listener described above, extends the base component, xtal-in-detail, which we've not mentioned yet (cuz it's kind of boring).  This component is also renamable, as described above.  Other names that could be more readable would be bubble-prop, prop-rebound.  It's difficult to see how you would use this component directly, but who knows.
+In some sense, this documentation is out of order.  The custom element add-event-listener described above, extends the base component, xtal-in-detail, which we've not mentioned yet (cuz it's kind of boring).  This component is also renamable, as described above.  Other names that could be more readable would be bubble-prop, or maybe prop-rebound.  It's difficult to see how you would use this component directly, but who knows?
 
 A critical feature of [custom events](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent) is the ability to pass a [detail](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/detail) as part of the event.
 
-xtal-in-detail allows you post an event any time a watched property, detail, changes.  Son in the context of a Polymer template, the markup could look as follows:
+xtal-in-detail allows you post an event any time a watched property, detail, changes.  So in the context of a Polymer template, the markup could look as follows:
 
 ```html
-<xtal-in-detail dispatch detail="[[theLatestScandal]]" bubbles composed>
+<xtal-in-detail dispatch detail="[[theLatestGossip]]" event-name="pssst!!!!!" bubbles composed>
 ```
 
 Now if we go back to the first web component, add-event-listener, it inherits this property, so when the button is clicked, it can pass the detail object via binding.
 
-However, this isn't sufficient for many cases.  add-event-listener also allows you to specify  property function, detail-fn, which is passed the triggering event, as well as the detail property.  This user defined function to look at the target element, and formulate a meaningful composite detail object (or promise) based these two parameters.
+However, this isn't sufficient for many cases.  add-event-listener also allows you to specify  a property function called "detailFn", which is passed the triggering event, as well as the detail property.  This user defined function can look at the target element, and formulate a meaningful composite detail object (or promise) based on attributes associated with the target element as well as it's own "detail" binding property.
 
 ======================================   TODO ========================================= 
 
