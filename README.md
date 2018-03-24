@@ -63,7 +63,7 @@ If the name of the custom element, add-event-listener seems too long, or clashes
 In your head tag, add a [preload tag](https://www.chromestatus.com/features/5762805915451392), with an id matching the default tag for example:
 
 ```html
-<link rel="modulepreload" href="path/to/add-event-listener.js" data-as="tl-dr">
+<link id="npm_xtal_in_add_event_listener" rel="modulepreload" href="path/to/add-event-listener.js" data-as="tl-dr">
 ```
 
 Then you can use tl-dr instead of add-event-listener

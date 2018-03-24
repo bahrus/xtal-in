@@ -106,7 +106,7 @@ export class XtalInDetail extends HTMLElement {
     }
 }
 function registerTagNameForRealz(defaultTagName, cls) {
-    const scTagName = defaultTagName.split('-').join('_');
+    const scTagName = 'npm_xtal_in_' + defaultTagName.split('-').join('_');
     let tagName = defaultTagName;
     const linkRef = self[scTagName];
     if (linkRef && linkRef.dataset.as) {
