@@ -1,4 +1,4 @@
-import { XtalInDetail } from './xtal-in-detail.js';
+import { XtalInDetail, registerTagName } from './xtal-in-detail.js';
 //const href = 'href';
 ////const resolvedUrl = 'resolved-url';
 const stopPropagation = 'stop-propagation';
@@ -7,7 +7,7 @@ const on = 'on';
 const ifMatches = 'if-matches';
 //const t = (document.currentScript as HTMLScriptElement).dataset.as;
 //const tagName = t ? t : 'add-event-listener';
-const tagName = 'add-event-listener';
+const defaultTagName = 'add-event-listener';
 class AddEventListener extends XtalInDetail {
     get detailFn() {
         return this._detailFn;
@@ -92,7 +92,5 @@ class AddEventListener extends XtalInDetail {
         this.disconnect();
     }
 }
-if (!customElements.get(tagName)) {
-    customElements.define(tagName, AddEventListener);
-}
+registerTagName(defaultTagName, AddEventListener);
 //# sourceMappingURL=add-event-listener.js.map

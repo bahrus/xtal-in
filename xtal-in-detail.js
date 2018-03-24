@@ -1,6 +1,6 @@
 //const t = (document.currentScript as HTMLScriptElement).dataset.as;
 //const tagName = t ? t : 'xtal-in-detail'; 
-const tagName = 'xtal-in-detail';
+const defaultTagName = 'xtal-in-detail';
 const bubbles = 'bubbles';
 const composed = 'composed';
 const dispatch = 'dispatch';
@@ -65,7 +65,6 @@ export class XtalInDetail extends HTMLElement {
         this.emitEvent();
     }
     emitEvent() {
-        debugger;
         const newEvent = new CustomEvent(this.eventName, {
             detail: this.detail,
             bubbles: this.bubbles,
@@ -106,8 +105,27 @@ export class XtalInDetail extends HTMLElement {
         this.onPropsChange();
     }
 }
-if (customElements.get(tagName)) {
-    customElements.define(tagName, XtalInDetail);
+function registerTagNameForRealz(defaultTagName, cls) {
+    const scTagName = defaultTagName.split('-').join('_');
+    let tagName = defaultTagName;
+    const linkRef = self[scTagName];
+    if (linkRef && linkRef.dataset.as) {
+        tagName = linkRef.dataset.as;
+    }
+    if (customElements.get(tagName))
+        return;
+    customElements.define(tagName, cls);
 }
+export function registerTagName(defaultTagName, cls) {
+    if (document.readyState !== "loading") {
+        registerTagNameForRealz(defaultTagName, cls);
+    }
+    else {
+        document.addEventListener("DOMContentLoaded", e => {
+            registerTagNameForRealz(defaultTagName, cls);
+        });
+    }
+}
+registerTagName(defaultTagName, XtalInDetail);
 // })();
 //# sourceMappingURL=xtal-in-detail.js.map

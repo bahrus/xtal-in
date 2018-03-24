@@ -1,5 +1,5 @@
 declare var xtal_ize_event;
-import { XtalInDetail, IXtalInDetailProperties } from './xtal-in-detail.js';
+import { XtalInDetail, IXtalInDetailProperties, registerTagName } from './xtal-in-detail.js';
 export interface IAddEventListener extends IXtalInDetailProperties {
     detailFn: (detail: any, ref: IAddEventListener) => any;
     stopPropagation: boolean,
@@ -17,7 +17,7 @@ const ifMatches = 'if-matches';
 
 //const t = (document.currentScript as HTMLScriptElement).dataset.as;
 //const tagName = t ? t : 'add-event-listener';
-const tagName = 'add-event-listener';
+const defaultTagName = 'add-event-listener';
 class AddEventListener extends XtalInDetail implements IAddEventListener {
 
     _detailFn: (detail: any, ref: IAddEventListener) => any;
@@ -108,7 +108,5 @@ class AddEventListener extends XtalInDetail implements IAddEventListener {
     }
 
 }
-if (!customElements.get(tagName)) {
-    customElements.define(tagName, AddEventListener);
-}
+registerTagName(defaultTagName, AddEventListener);
 

@@ -9,11 +9,11 @@ In the [groundbreaking blog post "Custom Elements That Work Anywhere"](http://ro
 > **In general, don't bubble events unless they are semantically meaningful.** For example, *changed* is not a very semantically
 > meaningful event, whereas *document-opened* would be. Non-semantic events can leak up and another element may accidentally handle them. 
 
-Adding an event handler to an element, whose sole purpose is to bubble the event up with a different name, is a rather insulting task for the powerful and sophisticated JavaScript language to handle.  JavaScript should only be bothered with important stuff, like reinventing the browser in an immutable abstraction layer that can time travel recursively.
+Adding an event listener to an element, whose sole purpose is to bubble the event up with a different name, is a rather insulting task for the powerful and sophisticated JavaScript language to handle.  JavaScript should only be bothered with important stuff, like reinventing the browser in an immutable abstraction layer that can time travel recursively.
 
 If a developer is looking at markup, and sees an event handler, and, heart beating in anticipation of what spectacular logic will be found there, finds that it is just reposting the event with a different name, can we fault the developer for asking if this is living, and making a mid-life career move?
 
-This packages contains multiple elements that enable declaratively currying, as well as generating, events easy.
+This packages contains multiple elements that enable declaratively currying, as well as generating, events easily.
 
 A number of elements, starting with prefix "xtal-in-*" serve as *sources* of events.
 
@@ -55,6 +55,18 @@ You can also specify a test on the element spawning the  the event, using the if
 ```
 
 For a very large application, avoiding collisions between two events that happen to adopt the same name is a little difficult sticking purely to declarative markup, especially compared to the power of JavaScript.  To solve this, you could utilize the xtal-import-export web component defined within the [webcomponents.org/element/bahrus/xtal-method](xtal-method) package.  You could import a global guid constant and export that symbol as your event-name property.
+
+## Renaming
+
+If the name of the custom element, add-event-listener seems too long, or clashes with someone else's custom element with the same name, then you can rename it locally.  The same applies to all the web components defined in this package, so the following discussion is more general than just for add-event-listener.
+
+In your head tag, add a [preload tag](https://www.chromestatus.com/features/5762805915451392), with an id matching the default tag for example:
+
+```html
+<link rel="modulepreload" href="path/to/add-event-listener.js" data-as="tl-dr">
+```
+
+Then you can use tl-dr instead of add-event-listener
 
 ======================================   TODO ========================================= 
 
