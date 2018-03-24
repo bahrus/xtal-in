@@ -1,0 +1,1 @@
+define(["require","exports","xtal-in-detail.js"],function(a,b,c){"use strict";Object.defineProperty(b,"__esModule",{value:!0});const d="xtal-ize-event";class e extends c.XtalInDetail{}b.XtalIzeEvent=e,customElements.get(d)||customElements.define(d,e)});

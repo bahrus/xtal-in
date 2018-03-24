@@ -1,20 +1,42 @@
 {
-  "entrypoint": "index.html",
+  "entrypoint": "xtal-ize-event.js",
   "fragments": [],
   "sources": [
-    "src\\v0\\xtal-in.js",
-    "index.html"
+    "xtal-in-detail.js",
+    "xtal-ize-event.js",
+    "xtal-ize-event.js"
   ],
   "extraDependencies": [
     "bower_components\\webcomponentsjs\\*.js"
   ],
   "builds": [
     {
-      "name": "ES5",
+      "name": "es5-bundled",
       "js": {
         "minify": true,
         "compile": true
-      }
+      },
+      "css": {
+        "minify": true
+      },
+      "html": {
+        "minify": true
+      },
+      "bundle": true,
+      "addServiceWorker": true,
+      "addPushManifest": false,
+      "preset": "es5-bundled"
+    },
+    {
+      "name": "ES5",
+      "js": {
+        "minify": false,
+        "compile": true
+      },
+      "sources": [
+        "xtal-in-detail.js",
+        "xtal-ize-event.js"
+      ]
     },
     {
       "name": "ES6",

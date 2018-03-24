@@ -1,7 +1,9 @@
 {
   "sources":[
-    "src/v0/xtal-in.js"
+    "xtal-in-detail.js",
+    "add-event-listener.js"
   ],
+  "entrypoint": "xtal-ize-event.js",
   "lint": {
     "rules": [
       "polymer-2"
@@ -9,8 +11,15 @@
   },
   "builds":[
     {
+      "preset": "es5-bundled"
+    },
+    {
       "name": "ES5",
-      "js": {"minify": true, "compile": true}
+      "js": {"minify": false, "compile": true},
+      "sources":[
+        "xtal-in-detail.js",
+        "xtal-ize-event.js"
+      ]
     },
     {
       "name": "ES6",

@@ -19,12 +19,13 @@
       <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
       <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
       <!-- <link rel="import" href="../xtal-in.html"> -->
-      <script src="../src/v0/xtal-in.js"></script>
+      <script type="module" src="../add-event-listener.js"></script>
       <demo-snippet>
         <template>
-          <xtal-in when-click dispatch event-name="hello" bubbles composed>
-            <button>Click to dispatch custom event</button>
-          </xtal-in>
+          <div>
+              <add-event-listener on="click" dispatch event-name="hello" bubbles composed></add-event-listener>
+              <button>Click to dispatch custom event</button>
+          </div>
           <script>
             document.body.addEventListener('hello', e =>{
               alert('received hello message');

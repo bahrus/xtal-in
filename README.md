@@ -1,8 +1,8 @@
 [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/bahrus/xtal-in)
 
-# \<xtal-in\>
+# \<xtal-in-*\>
 
-\<xtal-in\> is a dependency-free component that curries events with semantically meaningful, and even unique, discoverable event names.
+\<xtal-in-*\> is a dependency-free suite of components that generates events with semantically meaningful, and even unique, discoverable event names.
 
 In the [groundbreaking blog post "Custom Elements That Work Anywhere"](http://robdodson.me/interoperable-custom-elements/), Rob Dodson blegs:
 
@@ -13,15 +13,22 @@ Adding an event handler to an element, whose sole purpose is to bubble the event
 
 If a developer is looking at markup, and sees an event handler, and, heart beating in anticipation of what spectacular logic will be found there, finds that it is just reposting the event with a different name, can we fault the developer for asking if this is living, and making a mid-life career move?
 
-This element, \<xtal-in\>, makes it easy to declaratively curry a standard click or input event into a user defined event name. One can also automatically generate a unique event name in a typesafe, discoverable way, by referring to a relative url or TypeScript filename (e.g.), which might contain a guid identifier. 
+This packages contains multiple elements that enable declaratively currying, as well as generating, events easy.
 
-In addition, \<xtal-in\> supports declaratively configuring whether the event should bubble, and if it should escape its Shadow DOM cocoon via the composed flag:
+A number of elements, starting with prefix "xtal-in-*" serve as *sources* of events.
+
+One particular element in this package, *add-event-listener" only listens for events, and bubbles them up with a semantic name.  Let's start diving into this last one in more detail.
+
+If we look at the markup below:
 
 
 ```html
-<xtal-in when-click dispatch event-name="wtf" bubbles composed>
+<div>
+<add-event-listener on="click" dispatch event-name="wtf" bubbles composed></add-event-listener>
+...
 <button>How did I get here?</button>
-</xtal-in>
+...
+</div>
 <script>
 document.body.addEventListener('wtf', e =>{
     alert('Same as it ever was');
@@ -29,31 +36,34 @@ document.body.addEventListener('wtf', e =>{
 </script>
 ```
 
-In the example above, we wrapped a button element with the \<xtal-in\> element, and listened for clicks from within.
+In this example, add-event-listener attaches a "click" event listener to the parent element, div in this case.  It will thus capture any click events inside the div, including the button.
 
-============================  TODO ==========================================
+In addition to spawning a new event with a semantically meaningful name ("wtf"), one can stop the propagation of the original click event by setting attribute:  stop-propagation.  Note that we specify whether this new semantically meaningful event should bubble and/or escape the shadow DOM cocoon ("composed")
 
-But wrapping everything can become unwieldly, especially if we need to do more than monitor for one event type or change.
 
-You can alternatively specify a target by id to listen for the event:
+You can also specify a test on the element spawning the  the event, using the if-matches attribute, which uses matches() [under the hood](https://developer.mozilla.org/en-US/docs/Web/API/Element/matches):
 
 ```html
-<xtal-in when-clicking-on="talkingButton" dispatch event-name="¯\_(ツ)_/¯" bubbles composed></xtal-in>
-<xtal-in when-inputting-on="large_automobile" dispatch event-name="behind-the-wheel"></xtal-in>
->
+<div>
+    <add-event-listener on="click" if-matches="#talkingButton" dispatch event-name="¯\_(ツ)_/¯" bubbles composed></add-event-listener>
+    <add-event-listener on="input" if-matches="#large_automobile" dispatch event-name="behind-the-wheel"></xtal-in>
+
 ...
 <button id="talkingButton">My God! What have I done?</button>
 <input type="text" id="large_automobile">
+</div>
 ```
 
-There are special reserved values the target specifying attribute (when-clicking-on, when-inputting-on) can take: _self (default), _parent (parent node), _host (most immediate containing element that has a shadow root), that can be specified, which will cause the target to be determined relative to the *xtal-in* element. 
+For a very large application, avoiding collisions between two events that happen to adopt the same name is a little difficult sticking purely to declarative markup, especially compared to the power of JavaScript.  To solve this, you could utilize the xtal-import-export web component defined within the [webcomponents.org/element/bahrus/xtal-method](xtal-method) package.  You could import a global guid constant and export that symbol as your event-name property.
+
+======================================   TODO ========================================= 
 
 In addition to listening for click or input events, one can listen for attribute change events:
 
 ```html
 <david-byrne beautiful-wife="Adelle Lutz">
 #shadow-root >
-    <xtal-in when-attribute-mutates="_host@beautiful-wife" dispatch event-name="once-in-a-lifetime">
+    <xtal-in-mutate when-attribute-mutates="_host@beautiful-wife" dispatch event-name="once-in-a-lifetime">
 >
 </david-byrne>
 ```
@@ -61,7 +71,7 @@ In addition to listening for click or input events, one can listen for attribute
 One can specify detail information to include in the custom event via the detail property:
 
 ```html
-<xtal-in when-attribute-mutates="_host@money" dispatch event-name="blue-again" event-detail="[[waterFlow]]">
+<xtal-in-mutate when-attribute-mutates="_host@money" dispatch event-name="blue-again" event-detail="[[waterFlow]]">
 ```
 
 
