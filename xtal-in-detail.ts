@@ -126,11 +126,16 @@ export class XtalInDetail extends HTMLElement implements IXtalInDetailProperties
     }
 }
 function registerTagNameForRealz(defaultTagName: string, cls: any){
-    const scTagName = 'npm_xtal_in_' +  defaultTagName.split('-').join('_');
+    // const scTagName = 'npm_xtal_in_' +  defaultTagName.split('-').join('_');
     let tagName = defaultTagName;
-    const linkRef = self[scTagName] as HTMLLinkElement;
-    if(linkRef && linkRef.dataset.as){
-        tagName = linkRef.dataset.as;
+    // const linkRef = self[scTagName] as HTMLLinkElement;
+    // if(linkRef && linkRef.dataset.as){
+    //     tagName = linkRef.dataset.as;
+    // }
+    const was = document.head.querySelector(`[data-was="${defaultTagName}"]`) as HTMLScriptElement;
+    if(was){
+        const is = was.dataset.is;
+        if(is) tagName = is;
     }
     if(customElements.get(tagName)) return;
     customElements.define(tagName, cls);
