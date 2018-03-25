@@ -19,7 +19,7 @@ A number of elements, starting with prefix "xtal-in-*" serve as *sources* of eve
 
 One particular element in this package, *add-event-listener" only listens for events, and bubbles them up with a semantic name.  Let's start diving into this last one in more detail.
 
-If we look at the markup below:
+Take a look at the markup below:
 
 
 ```html
@@ -58,23 +58,36 @@ For a very large application, avoiding collisions between two events that happen
 
 ## Renaming
 
-If the name of the custom element, add-event-listener seems too long, or clashes with someone else's custom element with the same name, then you can rename it locally.  The same applies to all the web components defined in this package, so the following discussion is more general than just for add-event-listener.
+If the name of the custom element, add-event-listener, seems too long, or clashes with someone else's custom element with the same name, then you can rename it locally.  The same applies to all the web components defined in this package, so the following discussion is more general than just for add-event-listener.
 
 In your head tag, make sure there is an import tag explictly for the custom element, and add attributes like so:
 
 ```html
-<script type="module" src="../add-event-listener.js" data-was="add-event-listener" data-package-name='npm.xtal-in' data-is="tl-dr"></script>
+<script type="module" src="path/to/my/add-event-listener.js" data-package="npm.xtal-in" data-was="add-event-listener"   data-is="tl-dr"></script>
 ```
 
-Then you can use tl-dr instead of add-event-listener
+Then you can use tl-dr instead of add-event-listener.
+
+Else If you prefer to import your modules programmatically, but care about performance, you can instead use a [link preload tag](https://www.chromestatus.com/features/5762805915451392) tag.
+
+```html
+<link rel="modulepreload" as="script" href="path/to/my/add-event-listener.js" data-package="npm.xtal-in" data-was="add-event-listener"   data-is="tl-dr">
+```
+
+Else I don't know what to tell you.
+
+The need for so much ceremony, just to specify an alternative tag name, is not ideal.
 
 This is a temporary workaround until:
 
 1)  All modern browsers support import.meta.scriptElement natively or via a polyfill
-2)  TypeScript supports it.
-3)  No other snags are found using it.
+2)  No other snags are found using it.
 
-If all three conditions above are met, then data-was and data-is should be able to simply be data-as="tl-dr"
+If both conditions above are met, then two of the three attributes can be eliminated, so only a single (tbd) attribute is required, e.g. data-as="tl-dr".
+
+## Canonical Name
+
+If you want to use this component in a reusable component, which includes html template markup, and which you want to release into the wild, you should refer to the "canonical" name for this component:  "xtal-in-curry," rather than the more contentious add-event-listener.
 
 ## Details, details
 
@@ -82,10 +95,10 @@ In some sense, this documentation is out of order.  The custom element add-event
 
 A critical feature of [custom events](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent) is the ability to pass a [detail](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/detail) as part of the event.
 
-xtal-in-detail allows you post an event any time a watched property, "detail", changes.  So in the context of a Polymer template, the markup could look as follows:
+xtal-in-detail allows you to post an event any time a watched property, "detail", changes.  So in the context of a Polymer template, the markup could look as follows:
 
 ```html
-<xtal-in-detail dispatch detail="[[theLatestGossip]]" event-name="pssst!!!!!" bubbles composed>
+<xtal-in-detail dispatch detail="[[whatIFound]]" event-name="at bottom of the ocean" bubbles composed>
 ```
 
 Now if we go back to the first web component, add-event-listener, it inherits this property, so when the button is clicked, it can pass the detail object via binding.

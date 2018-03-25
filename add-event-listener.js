@@ -8,6 +8,7 @@ const ifMatches = 'if-matches';
 //const t = (document.currentScript as HTMLScriptElement).dataset.as;
 //const tagName = t ? t : 'add-event-listener';
 const defaultTagName = 'add-event-listener';
+const canonicalTagName = 'xtal-in-curry';
 class AddEventListener extends XtalInDetail {
     get detailFn() {
         return this._detailFn;
@@ -93,4 +94,7 @@ class AddEventListener extends XtalInDetail {
     }
 }
 registerTagName(defaultTagName, AddEventListener);
+class XtalInCurry extends AddEventListener {
+}
+registerTagName(canonicalTagName, XtalInCurry);
 //# sourceMappingURL=add-event-listener.js.map

@@ -18,6 +18,7 @@ const ifMatches = 'if-matches';
 //const t = (document.currentScript as HTMLScriptElement).dataset.as;
 //const tagName = t ? t : 'add-event-listener';
 const defaultTagName = 'add-event-listener';
+const canonicalTagName = 'xtal-in-curry';
 class AddEventListener extends XtalInDetail implements IAddEventListener {
 
     _detailFn: (detail: any, ref: IAddEventListener) => any;
@@ -109,4 +110,6 @@ class AddEventListener extends XtalInDetail implements IAddEventListener {
 
 }
 registerTagName(defaultTagName, AddEventListener);
+class XtalInCurry extends AddEventListener{}
+registerTagName(canonicalTagName, XtalInCurry);
 
