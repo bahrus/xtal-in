@@ -53,9 +53,18 @@ class AddEventListener extends XtalInDetail {
                 break;
             case on:
                 this._on = newValue;
-                if (this._on) {
-                    this._boundHandleEvent = this.handleEvent.bind(this);
-                    this.parentElement.addEventListener(this._on, this._boundHandleEvent);
+                const parent = this.parentElement;
+                let bundledAllHandlers = parent[canonicalTagName];
+                if (this._on && !bundledAllHandlers) {
+                    bundledAllHandlers = parent[canonicalTagName] = {};
+                    let bundledHandlersForSingleEventType = bundledAllHandlers[this._on];
+                    if (!bundledHandlersForSingleEventType) {
+                        bundledHandlersForSingleEventType = bundledAllHandlers[this._on] = [];
+                        bundledHandlersForSingleEventType.push(this);
+                        this.parentElement.addEventListener(this._on, this.handleEvent);
+                    }
+                    //this._boundHandleEvent = this.handleEvent.bind(this);
+                    //this.parentElement.addEventListener(this._on, this._boundHandleEvent);
                 }
                 else {
                     this.disconnect();
@@ -63,19 +72,23 @@ class AddEventListener extends XtalInDetail {
                 break;
         }
     }
+    //_boundHandleEvent;
     handleEvent(e) {
-        if (this._ifMatches) {
-            if (!e.target.matches(this._ifMatches))
-                return;
-        }
-        if (this.stopPropagation)
-            e.stopPropagation();
-        if (this.detailFn) {
-            this.detail = this.detailFn(e, this);
-        }
-        else {
-            this.detail = {};
-        }
+        const bundledHandlers = this['xtal-in-curry'][e.type];
+        bundledHandlers.forEach(_this => {
+            if (_this._ifMatches) {
+                if (!e.target.matches(_this._ifMatches))
+                    return;
+            }
+            if (_this.stopPropagation)
+                e.stopPropagation();
+            if (_this.detailFn) {
+                _this.detail = _this.detailFn(e, this);
+            }
+            else {
+                _this.detail = {};
+            }
+        });
         //this.dispatch = true;
         // window.requestAnimationFrame(() => {
         //     this.dispatch = false;
