@@ -96,5 +96,5 @@ class AddEventListener extends XtalInDetail {
 registerTagName(defaultTagName, AddEventListener);
 class XtalInCurry extends AddEventListener {
 }
-registerTagName(canonicalTagName, XtalInCurry);
+customElements.define(canonicalTagName, XtalInCurry);
 //# sourceMappingURL=add-event-listener.js.map

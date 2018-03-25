@@ -111,5 +111,5 @@ class AddEventListener extends XtalInDetail implements IAddEventListener {
 }
 registerTagName(defaultTagName, AddEventListener);
 class XtalInCurry extends AddEventListener{}
-registerTagName(canonicalTagName, XtalInCurry);
+customElements.define(canonicalTagName, XtalInCurry);
 
