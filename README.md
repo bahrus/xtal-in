@@ -63,7 +63,7 @@ If the name of the custom element, add-event-listener seems too long, or clashes
 In your head tag, make sure there is an import tag explictly for the custom element, and add attributes like so:
 
 ```html
-<script type="module" href="path/to/add-event-listener.js" data-was="add-event-listener" data-is="tl-dr">
+<script type="module" src="../add-event-listener.js" data-was="add-event-listener" data-package-name='npm.xtal-in' data-is="tl-dr"></script>
 ```
 
 Then you can use tl-dr instead of add-event-listener

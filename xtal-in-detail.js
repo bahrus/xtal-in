@@ -112,7 +112,7 @@ function registerTagNameForRealz(defaultTagName, cls) {
     // if(linkRef && linkRef.dataset.as){
     //     tagName = linkRef.dataset.as;
     // }
-    const was = document.head.querySelector(`[data-was="${defaultTagName}"]`);
+    const was = document.head.querySelector(`[data-was="${defaultTagName}"][data-package="npm.xtal-in"]`);
     if (was) {
         const is = was.dataset.is;
         if (is)
