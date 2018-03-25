@@ -68,13 +68,13 @@ In your head tag, add a [preload tag](https://www.chromestatus.com/features/5762
 
 Then you can use tl-dr instead of add-event-listener
 
-## Rebounding Properties
+## Details, details
 
 In some sense, this documentation is out of order.  The custom element add-event-listener described above, extends the base component, xtal-in-detail, which we've not mentioned yet (cuz it's kind of boring).  This component is also renamable, as described above.  Other names that could be more readable would be bubble-prop, or maybe prop-rebound.  It's difficult to see how you would use this component directly, but who knows?
 
 A critical feature of [custom events](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent) is the ability to pass a [detail](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/detail) as part of the event.
 
-xtal-in-detail allows you post an event any time a watched property, detail, changes.  So in the context of a Polymer template, the markup could look as follows:
+xtal-in-detail allows you post an event any time a watched property, "detail", changes.  So in the context of a Polymer template, the markup could look as follows:
 
 ```html
 <xtal-in-detail dispatch detail="[[theLatestGossip]]" event-name="pssst!!!!!" bubbles composed>
