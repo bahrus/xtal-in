@@ -60,13 +60,21 @@ For a very large application, avoiding collisions between two events that happen
 
 If the name of the custom element, add-event-listener seems too long, or clashes with someone else's custom element with the same name, then you can rename it locally.  The same applies to all the web components defined in this package, so the following discussion is more general than just for add-event-listener.
 
-In your head tag, add a [preload tag](https://www.chromestatus.com/features/5762805915451392), with an id matching the default tag for example:
+In your head tag, make sure there is an import tag explictly for the custom element, and add attributes like so:
 
 ```html
-<link id="npm_xtal_in_add_event_listener" rel="modulepreload" href="path/to/add-event-listener.js" data-as="tl-dr">
+<script type="module" href="path/to/add-event-listener.js" data-was="add-event-listener" data-is="tl-dr">
 ```
 
 Then you can use tl-dr instead of add-event-listener
+
+This is a temporary workaround until:
+
+1)  All modern browsers support import.meta.scriptElement natively or via a polyfill
+2)  TypeScript supports it.
+3)  No other snags are found using it.
+
+If all three conditions above are met, then data-was and data-is should be able to simply be data-as="tl-dr"
 
 ## Details, details
 
