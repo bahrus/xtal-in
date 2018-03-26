@@ -51,18 +51,23 @@ class AddEventListener extends XtalInDetail {
             case stopPropagation:
                 this._stopPropagation = newValue !== null;
                 break;
+            case ifMatches:
+                this._ifMatches = newValue;
+                break;
             case on:
                 this._on = newValue;
                 const parent = this.parentElement;
                 let bundledAllHandlers = parent[canonicalTagName];
-                if (this._on && !bundledAllHandlers) {
-                    bundledAllHandlers = parent[canonicalTagName] = {};
+                if (this._on) {
+                    if (!bundledAllHandlers) {
+                        bundledAllHandlers = parent[canonicalTagName] = {};
+                    }
                     let bundledHandlersForSingleEventType = bundledAllHandlers[this._on];
                     if (!bundledHandlersForSingleEventType) {
                         bundledHandlersForSingleEventType = bundledAllHandlers[this._on] = [];
-                        bundledHandlersForSingleEventType.push(this);
                         this.parentElement.addEventListener(this._on, this.handleEvent);
                     }
+                    bundledHandlersForSingleEventType.push(this);
                     //this._boundHandleEvent = this.handleEvent.bind(this);
                     //this.parentElement.addEventListener(this._on, this._boundHandleEvent);
                 }
@@ -95,7 +100,7 @@ class AddEventListener extends XtalInDetail {
         // })
     }
     disconnect() {
-        this.parentElement.removeEventListener(this._on, this._boundHandleEvent);
+        this.parentElement.removeEventListener(this._on, this.handleEvent);
     }
     connectedCallback() {
         super.connectedCallback();

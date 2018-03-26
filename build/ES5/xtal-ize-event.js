@@ -6,7 +6,12 @@
     "use strict";
 
     Object.defineProperty(exports, "__esModule", { value: true });
-    var tagName = 'xtal-ize-event';
+    //const href = 'href';
+    ////const resolvedUrl = 'resolved-url';
+    var stopPropagation = 'stop-propagation';
+    //const fileName = 'file-name';
+    var on = 'on';
+    var tagName = xtal_in_detail_js_1.getTagName('xtal-ize-event');
 
     var XtalIzeEvent = function (_xtal_in_detail_js_1$) {
         babelHelpers.inherits(XtalIzeEvent, _xtal_in_detail_js_1$);
@@ -16,10 +21,80 @@
             return babelHelpers.possibleConstructorReturn(this, (XtalIzeEvent.__proto__ || Object.getPrototypeOf(XtalIzeEvent)).apply(this, arguments));
         }
 
+        babelHelpers.createClass(XtalIzeEvent, [{
+            key: "attributeChangedCallback",
+            value: function attributeChangedCallback(name, oldValue, newValue) {
+                babelHelpers.get(XtalIzeEvent.prototype.__proto__ || Object.getPrototypeOf(XtalIzeEvent.prototype), "attributeChangedCallback", this).call(this, name, oldValue, newValue);
+                switch (name) {
+                    // case href:
+                    //     this._href = newValue;
+                    //     break;
+                    case stopPropagation:
+                        this._stopPropagation = newValue !== null;
+                        break;
+                    case on:
+                        this._on = newValue;
+                        if (this._on) {
+                            this.addEventListener(this._on, this.handleEvent);
+                        } else {
+                            this.disconnect();
+                        }
+                        break;
+                }
+            }
+        }, {
+            key: "handleEvent",
+            value: function handleEvent() {}
+        }, {
+            key: "disconnect",
+            value: function disconnect() {
+                this.removeEventListener(this._on, this.handleEvent);
+            }
+            // connectedCallback(){
+            // }
+
+        }, {
+            key: "disconnectedCallback",
+            value: function disconnectedCallback() {
+                this.disconnect();
+            }
+        }, {
+            key: "detailFn",
+            get: function get() {
+                return this._reviseDetailFn;
+            },
+            set: function set(val) {
+                this._reviseDetailFn = val;
+            }
+        }, {
+            key: "stopPropagation",
+            get: function get() {
+                return this._stopPropagation;
+            },
+            set: function set(val) {
+                if (val) {
+                    this.setAttribute(stopPropagation, '');
+                } else {
+                    this.removeAttribute(stopPropagation);
+                }
+            }
+        }, {
+            key: "on",
+            get: function get() {
+                return this._on;
+            },
+            set: function set(val) {
+                this.setAttribute(on, val);
+            }
+        }], [{
+            key: "observedAttributes",
+            get: function get() {
+                return babelHelpers.get(XtalIzeEvent.__proto__ || Object.getPrototypeOf(XtalIzeEvent), "observedAttributes", this).concat([stopPropagation, on]);
+            }
+        }]);
         return XtalIzeEvent;
     }(xtal_in_detail_js_1.XtalInDetail);
 
-    exports.XtalIzeEvent = XtalIzeEvent;
     if (!customElements.get(tagName)) {
         customElements.define(tagName, XtalIzeEvent);
     }

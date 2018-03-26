@@ -69,40 +69,49 @@ class AddEventListener extends XtalInDetail implements IAddEventListener {
             case stopPropagation:
                 this._stopPropagation = newValue !== null;
                 break;
+            case ifMatches:
+                this._ifMatches = newValue;
+                break;
             case on:
                 this._on = newValue;
                 const parent = this.parentElement;
                 let bundledAllHandlers = parent[canonicalTagName];
-                if (this._on && !bundledAllHandlers ) {
+                if (this._on) {
 
-                    bundledAllHandlers = parent[canonicalTagName] = {};
+                    if (!bundledAllHandlers) {
+
+                        bundledAllHandlers = parent[canonicalTagName] = {};
+                    }
                     let bundledHandlersForSingleEventType = bundledAllHandlers[this._on];
-                    if(!bundledHandlersForSingleEventType){
+                    if (!bundledHandlersForSingleEventType) {
                         bundledHandlersForSingleEventType = bundledAllHandlers[this._on] = [];
-                        bundledHandlersForSingleEventType.push(this);
                         this.parentElement.addEventListener(this._on, this.handleEvent);
                     }
+                    bundledHandlersForSingleEventType.push(this);
                     //this._boundHandleEvent = this.handleEvent.bind(this);
                     //this.parentElement.addEventListener(this._on, this._boundHandleEvent);
-                    
+
+
                 } else {
                     this.disconnect();
                 }
                 break;
-        }
+        
+        
+            }
     }
     //_boundHandleEvent;
 
     handleEvent(e: Event) {
         const bundledHandlers = this['xtal-in-curry'][e.type] as XtalInCurry[];
-        bundledHandlers.forEach(_this =>{
-            if(_this._ifMatches){
-                if(!(e.target as HTMLElement).matches(_this._ifMatches)) return;
+        bundledHandlers.forEach(_this => {
+            if (_this._ifMatches) {
+                if (!(e.target as HTMLElement).matches(_this._ifMatches)) return;
             }
             if (_this.stopPropagation) e.stopPropagation();
             if (_this.detailFn) {
                 _this.detail = _this.detailFn(e, this);
-            }else{
+            } else {
                 _this.detail = {};
             }
         })
@@ -113,7 +122,8 @@ class AddEventListener extends XtalInDetail implements IAddEventListener {
         // })
     }
     disconnect() {
-        this.parentElement.removeEventListener(this._on, this._boundHandleEvent);
+
+        this.parentElement.removeEventListener(this._on, this.handleEvent);
     }
     connectedCallback() {
         super.connectedCallback();
@@ -126,6 +136,6 @@ class AddEventListener extends XtalInDetail implements IAddEventListener {
 
 }
 registerTagName(defaultTagName, AddEventListener);
-class XtalInCurry extends AddEventListener{}
+class XtalInCurry extends AddEventListener { }
 customElements.define(canonicalTagName, XtalInCurry);
 

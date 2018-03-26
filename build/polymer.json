@@ -3,7 +3,7 @@
   "fragments": [],
   "sources": [
     "xtal-in-detail.js",
-    "xtal-ize-event.js",
+    "add-event-listener.js",
     "xtal-ize-event.js"
   ],
   "extraDependencies": [
