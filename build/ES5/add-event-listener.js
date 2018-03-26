@@ -1,12 +1,7 @@
 import { XtalInDetail, registerTagName } from './xtal-in-detail.js';
-//const href = 'href';
-////const resolvedUrl = 'resolved-url';
 var stopPropagation = 'stop-propagation';
-//const fileName = 'file-name';
 var on = 'on';
 var ifMatches = 'if-matches';
-//const t = (document.currentScript as HTMLScriptElement).dataset.as;
-//const tagName = t ? t : 'add-event-listener';
 var defaultTagName = 'add-event-listener';
 var canonicalTagName = 'xtal-in-curry';
 

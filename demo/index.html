@@ -9,6 +9,7 @@
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <!-- <script type="module" src="../add-event-listener.js" data-was="add-event-listener" data-package='npm.xtal-in' data-is="tl-dr"></script> -->
     <script type="module" src="../add-event-listener.js"></script>
+    <script type="module" src="../observe-attributes.js"></script>
     <custom-style>
       <style is="custom-style" include="demo-pages-shared-styles">
       </style>
@@ -19,6 +20,7 @@
       <h3>Basic xtal-in demo</h3>
       <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
       <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+      <link rel="import" href="../../vaadin-checkbox/vaadin-checkbox.html">
       <!-- <link rel="import" href="../xtal-in.html"> -->
       
       <demo-snippet>
@@ -28,6 +30,13 @@
               <add-event-listener on="click" if-matches="#test1" dispatch event-name="test1" bubbles composed></add-event-listener>
               <button>Click to dispatch custom event</button>
               <button id="test1">Matching Test</button>
+              
+              
+          </div>
+          <div>
+            <observe-attributes dispatch event-name="checkChange" bubbles composed>
+              <vaadin-checkbox></vaadin-checkbox>
+            </observe-attributes>
           </div>
           <script>
             document.body.addEventListener('hello', e =>{
@@ -35,6 +44,9 @@
             })
             document.body.addEventListener('test1', e=>{
               alert('received test1 message');
+            })
+            document.body.addEventListener('checkChange', e=>{
+              alert('change of attribute')
             })
           </script>
         </template>

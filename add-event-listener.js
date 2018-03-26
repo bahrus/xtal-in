@@ -1,12 +1,7 @@
 import { XtalInDetail, registerTagName } from './xtal-in-detail.js';
-//const href = 'href';
-////const resolvedUrl = 'resolved-url';
 const stopPropagation = 'stop-propagation';
-//const fileName = 'file-name';
 const on = 'on';
 const ifMatches = 'if-matches';
-//const t = (document.currentScript as HTMLScriptElement).dataset.as;
-//const tagName = t ? t : 'add-event-listener';
 const defaultTagName = 'add-event-listener';
 const canonicalTagName = 'xtal-in-curry';
 class AddEventListener extends XtalInDetail {

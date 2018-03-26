@@ -4,7 +4,8 @@
   "main": "src/v0/xtal-in.js",
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
-    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.1.0"
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.1.0",
+    "vaadin-checkbox": "vaadin/vaadin-checkbox#^1.0.3"
   },
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
