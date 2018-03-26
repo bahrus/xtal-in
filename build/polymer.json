@@ -4,6 +4,7 @@
   "sources": [
     "xtal-in-detail.js",
     "add-event-listener.js",
+    "observe-attributes.js",
     "xtal-ize-event.js"
   ],
   "extraDependencies": [
