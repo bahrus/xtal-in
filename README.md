@@ -105,23 +105,17 @@ Now if we go back to the first web component, add-event-listener, it inherits th
 
 However, this isn't sufficient for many cases.  add-event-listener also allows you to specify  a property function called "detailFn", which is passed the triggering event, as well as the detail property.  This user defined function can look at the target element, and formulate a meaningful composite detail object (or promise) based on attributes associated with the target element as well as it's own "detail" binding property.
 
-======================================   TODO ========================================= 
+## Monitoring Attribute Changes
+
 
 In addition to listening for click or input events, one can listen for attribute change events:
 
 ```html
-<david-byrne beautiful-wife="Adelle Lutz">
-#shadow-root >
-    <xtal-in-mutate when-attribute-mutates="_host@beautiful-wife" dispatch event-name="once-in-a-lifetime">
->
-</david-byrne>
+<observe-attributes dispatch event-name="once-in-a-lifetime">
+<david-byrne beautiful-wife="Adelle Lutz"></david-byrne>
+</observe-attributes>
 ```
 
-One can specify detail information to include in the custom event via the detail property:
-
-```html
-<xtal-in-mutate when-attribute-mutates="_host@money" dispatch event-name="blue-again" event-detail="[[waterFlow]]">
-```
 
 
 

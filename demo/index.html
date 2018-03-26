@@ -34,6 +34,7 @@
               
           </div>
           <div>
+            Observe console.log to see what happens when you toggle the vaadin-checkbox
             <observe-attributes dispatch event-name="checkChange" bubbles composed>
               <vaadin-checkbox></vaadin-checkbox>
             </observe-attributes>
@@ -46,7 +47,7 @@
               alert('received test1 message');
             })
             document.body.addEventListener('checkChange', e=>{
-              alert('change of attribute')
+              console.log(e);
             })
           </script>
         </template>

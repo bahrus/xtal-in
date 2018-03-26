@@ -26,24 +26,26 @@ class ObserveAttributes extends XtalInDetail implements IObserveMutationsPropert
                 break;
         }
     }
-    onPropsChange(){
+    addMutationObserver(){
         this.disconnect();
         if(!this._child) return;
         const config : MutationObserverInit = { attributes: true, attributeFilter: this._filter };
-        this._observer =  new MutationObserver(this.handleAttributeChange);
+        this._observer =  new MutationObserver((mutationsList: MutationRecord[]) =>{
+            mutationsList.forEach(mutation =>{
+                this.detail = {
+                    mutation
+                }
+            })
+        });
         this._observer.observe(this._child, config);
 
     }
-    handleAttributeChange(mutationsList: MutationRecord[]){
-        // this.detail = {
-        //     mutationsList[0]
-        // }
-        mutationsList.forEach(mutation =>{
-            this.detail = {
-                mutation
-            }
-        })
-    }
+    // handleAttributeChange(mutationsList: MutationRecord[]){
+    //     // this.detail = {
+    //     //     mutationsList[0]
+    //     // }
+
+    // }
     _child: Element;
     getChild(){
         switch(this.childElementCount){
@@ -54,7 +56,7 @@ class ObserveAttributes extends XtalInDetail implements IObserveMutationsPropert
                 return;
             case 1:
                 this._child = this.firstElementChild;
-                this.onPropsChange();
+                this.addMutationObserver();
                 break;
             default:
                 console.error("This component only supports a single element child");
