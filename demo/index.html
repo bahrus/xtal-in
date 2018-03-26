@@ -34,8 +34,8 @@
               
           </div>
           <div>
-            Observe console.log to see what happens when you toggle the vaadin-checkbox
-            <observe-attributes dispatch event-name="checkChange" bubbles composed>
+            <div>Observe console.log to see what happens when you toggle the vaadin-checkbox</div>
+            <observe-attributes dispatch event-name="checkChange" bubbles composed filter='["checked"]'>
               <vaadin-checkbox></vaadin-checkbox>
             </observe-attributes>
           </div>
