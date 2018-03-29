@@ -85,8 +85,11 @@ class AddEventListener extends XtalInDetail {
             if (_this.detailFn) {
                 _this.detail = _this.detailFn(e, this);
             }
-            else {
+            else if (!_this.detail) {
                 _this.detail = {};
+            }
+            else {
+                _this.detail = Object.assign({}, this.detail);
             }
         });
         //this.dispatch = true;
@@ -102,7 +105,7 @@ class AddEventListener extends XtalInDetail {
         this._upgradeProperties(['on', 'stopPropagation', 'detailFn']);
     }
     disconnectedCallback() {
-        super.connectedCallback();
+        //super.disconnectedCallback();
         this.disconnect();
     }
 }

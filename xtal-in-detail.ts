@@ -125,7 +125,6 @@ export class XtalInDetail extends HTMLElement implements IXtalInDetailProperties
     }
     connectedCallback() {
         this._upgradeProperties(XtalInDetail.observedAttributes.map(attrib => this.snakeToCamel(attrib)));
-      
     }
     attributeChangedCallback(name, oldValue, newValue) {
         switch (name) {

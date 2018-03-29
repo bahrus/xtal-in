@@ -105,8 +105,10 @@ class AddEventListener extends XtalInDetail implements IAddEventListener {
             if (_this.stopPropagation) e.stopPropagation();
             if (_this.detailFn) {
                 _this.detail = _this.detailFn(e, this);
-            } else {
+            } else if(!_this.detail) {
                 _this.detail = {};
+            } else{
+                _this.detail = Object.assign({}, this.detail);
             }
         })
 
@@ -124,7 +126,7 @@ class AddEventListener extends XtalInDetail implements IAddEventListener {
         this._upgradeProperties(['on', 'stopPropagation', 'detailFn'])
     }
     disconnectedCallback() {
-        super.connectedCallback();
+        //super.disconnectedCallback();
         this.disconnect();
     }
 
