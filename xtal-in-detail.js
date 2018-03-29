@@ -53,6 +53,20 @@ export class XtalInDetail extends HTMLElement {
     set eventName(val) {
         this.setAttribute(event_name, val);
     }
+    get value() {
+        return this._value;
+    }
+    setValue(val) {
+        this._value = val;
+        const newEvent = new CustomEvent('value-changed', {
+            detail: {
+                value: val
+            },
+            bubbles: true,
+            composed: false
+        });
+        this.dispatchEvent(newEvent);
+    }
     // get href(){
     //     return this.getAttribute(href);
     // }

@@ -5,6 +5,7 @@ export interface IXtalInDetailProperties {
     dispatch: boolean,
     detail: any,
     eventName: string,
+    value: any,
 }
 
 //const t = (document.currentScript as HTMLScriptElement).dataset.as;
@@ -66,6 +67,22 @@ export class XtalInDetail extends HTMLElement implements IXtalInDetailProperties
     }
     set eventName(val: string) {
         this.setAttribute(event_name, val);
+    }
+
+    _value: any;
+    get value(){
+        return this._value;
+    }
+    setValue(val){
+        this._value = val;
+        const newEvent = new CustomEvent('value-changed', {
+            detail: {
+                value: val
+            },
+            bubbles: true,
+            composed: false
+        } as CustomEventInit);
+        this.dispatchEvent(newEvent);        
     }
 
     // get href(){
