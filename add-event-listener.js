@@ -2,14 +2,13 @@ import { XtalInDetail, registerTagName } from './xtal-in-detail.js';
 const stopPropagation = 'stop-propagation';
 const on = 'on';
 const ifMatches = 'if-matches';
+const valueProps = 'value-props';
 const defaultTagName = 'add-event-listener';
 const canonicalTagName = 'xtal-in-curry';
 class AddEventListener extends XtalInDetail {
-    get detailFn() {
-        return this._detailFn;
-    }
-    set detailFn(val) {
-        this._detailFn = val;
+    constructor() {
+        super();
+        this._isSubClass = true;
     }
     get stopPropagation() {
         return this._stopPropagation;
@@ -34,8 +33,14 @@ class AddEventListener extends XtalInDetail {
     set ifMatches(val) {
         this.setAttribute(ifMatches, val);
     }
+    get valueProps() {
+        return this._valueProps;
+    }
+    set valueProps(val) {
+        this.setAttribute(valueProps, val.toString());
+    }
     static get observedAttributes() {
-        return super.observedAttributes.concat([stopPropagation, on, ifMatches]);
+        return super.observedAttributes.concat([stopPropagation, on, ifMatches, valueProps]);
     }
     attributeChangedCallback(name, oldValue, newValue) {
         super.attributeChangedCallback(name, oldValue, newValue);
@@ -46,6 +51,18 @@ class AddEventListener extends XtalInDetail {
             case stopPropagation:
                 this._stopPropagation = newValue !== null;
                 break;
+            case valueProps:
+                if (newValue === null) {
+                    this._valueProps = null;
+                }
+                else {
+                    if (newValue.startsWith('[')) {
+                        this._valueProps = JSON.parse(newValue);
+                    }
+                    else {
+                        this._valueProps = newValue;
+                    }
+                }
             case ifMatches:
                 this._ifMatches = newValue;
                 break;
@@ -75,22 +92,32 @@ class AddEventListener extends XtalInDetail {
     //_boundHandleEvent;
     handleEvent(e) {
         const bundledHandlers = this['xtal-in-curry'][e.type];
-        bundledHandlers.forEach(_this => {
-            if (_this._ifMatches) {
-                if (!e.target.matches(_this._ifMatches))
+        bundledHandlers.forEach(subscriber => {
+            const target = e.target;
+            if (subscriber._ifMatches) {
+                if (!target.matches(subscriber._ifMatches))
                     return;
             }
-            if (_this.stopPropagation)
+            if (subscriber.stopPropagation)
                 e.stopPropagation();
-            if (_this.detailFn) {
-                _this.detail = _this.detailFn(e, this);
+            const eventObj = {
+                context: subscriber.detail
+            };
+            let values;
+            if (this._valueProps) {
+                if (Array.isArray(this._valueProps)) {
+                    values = {};
+                    this._valueProps.forEach(prop => {
+                        values[prop] = target[prop];
+                    });
+                }
+                else {
+                    values = target[this._valueProps];
+                }
+                eventObj.values = values;
             }
-            else if (!_this.detail) {
-                _this.detail = {};
-            }
-            else {
-                _this.detail = Object.assign({}, this.detail);
-            }
+            this.detail = eventObj;
+            this.setValue(values);
         });
         //this.dispatch = true;
         // window.requestAnimationFrame(() => {

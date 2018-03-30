@@ -1,27 +1,30 @@
 declare var xtal_ize_event;
 import { XtalInDetail, IXtalInDetailProperties, registerTagName } from './xtal-in-detail.js';
 export interface IAddEventListener extends IXtalInDetailProperties {
-    detailFn: (detail: any, ref: IAddEventListener) => any;
+    //detailFn: (detail: any, ref: IAddEventListener) => any;
+    valueProps: string | string[];
     stopPropagation: boolean,
     on: string,
     ifMatches: string,
+}
+export interface IEventPacket{
+    context : any,
+    values : any,
 }
 
 const stopPropagation = 'stop-propagation';
 const on = 'on';
 const ifMatches = 'if-matches';
+const valueProps = 'value-props';
 
 const defaultTagName = 'add-event-listener';
 const canonicalTagName = 'xtal-in-curry';
 class AddEventListener extends XtalInDetail implements IAddEventListener {
+    constructor(){
+        super();
+        this._isSubClass = true;
+    }
 
-    _detailFn: (detail: any, ref: IAddEventListener) => any;
-    get detailFn() {
-        return this._detailFn;
-    }
-    set detailFn(val) {
-        this._detailFn = val;
-    }
     _stopPropagation: boolean;
     get stopPropagation() {
         return this._stopPropagation;
@@ -49,12 +52,18 @@ class AddEventListener extends XtalInDetail implements IAddEventListener {
     set ifMatches(val: string) {
         this.setAttribute(ifMatches, val);
     }
-
+    _valueProps: string | string[];
+    get valueProps(){
+        return this._valueProps;
+    }
+    set valueProps(val: string | string[]){
+        this.setAttribute(valueProps, val.toString());
+    }
 
     static get observedAttributes() {
-        return super.observedAttributes.concat([stopPropagation, on, ifMatches]);
+        return super.observedAttributes.concat([stopPropagation, on, ifMatches, valueProps]);
     }
-    attributeChangedCallback(name, oldValue, newValue) {
+    attributeChangedCallback(name, oldValue, newValue: string) {
         super.attributeChangedCallback(name, oldValue, newValue);
         switch (name) {
             // case href:
@@ -63,6 +72,16 @@ class AddEventListener extends XtalInDetail implements IAddEventListener {
             case stopPropagation:
                 this._stopPropagation = newValue !== null;
                 break;
+            case valueProps:
+                if(newValue === null){
+                    this._valueProps = null;
+                }else{
+                    if(newValue.startsWith('[')){
+                        this._valueProps = JSON.parse(newValue);
+                    }else{
+                        this._valueProps = newValue;
+                    }
+                }
             case ifMatches:
                 this._ifMatches = newValue;
                 break;
@@ -96,20 +115,32 @@ class AddEventListener extends XtalInDetail implements IAddEventListener {
     }
     //_boundHandleEvent;
 
+
     handleEvent(e: Event) {
         const bundledHandlers = this['xtal-in-curry'][e.type] as XtalInCurry[];
-        bundledHandlers.forEach(_this => {
-            if (_this._ifMatches) {
-                if (!(e.target as HTMLElement).matches(_this._ifMatches)) return;
+        bundledHandlers.forEach(subscriber => {
+            const target = e.target;
+            if (subscriber._ifMatches) {
+                if (!(target as HTMLElement).matches(subscriber._ifMatches)) return;
             }
-            if (_this.stopPropagation) e.stopPropagation();
-            if (_this.detailFn) {
-                _this.detail = _this.detailFn(e, this);
-            } else if(!_this.detail) {
-                _this.detail = {};
-            } else{
-                _this.detail = Object.assign({}, this.detail);
+            if (subscriber.stopPropagation) e.stopPropagation();
+            const eventObj = {
+                context: subscriber.detail
+            } as IEventPacket;
+            let values;
+            if(this._valueProps){
+                if(Array.isArray(this._valueProps)){
+                    values = {};
+                    this._valueProps.forEach(prop =>{
+                        values[prop] = target[prop]
+                    });
+                }else{
+                    values = target[this._valueProps];
+                }
+                eventObj.values = values;
             }
+            this.detail = eventObj;
+            this.setValue(values);
         })
 
         //this.dispatch = true;

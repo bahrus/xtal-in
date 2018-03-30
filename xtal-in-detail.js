@@ -1,5 +1,3 @@
-//const t = (document.currentScript as HTMLScriptElement).dataset.as;
-//const tagName = t ? t : 'xtal-in-detail'; 
 const defaultTagName = 'xtal-in-detail';
 const bubbles = 'bubbles';
 const composed = 'composed';
@@ -67,12 +65,6 @@ export class XtalInDetail extends HTMLElement {
         });
         this.dispatchEvent(newEvent);
     }
-    // get href(){
-    //     return this.getAttribute(href);
-    // }
-    // set href(val: string){
-    //     this.setAttribute(href, val);
-    // }
     onPropsChange() {
         if (!this._dispatch || !this._detail || (!this.eventName))
             return;
@@ -85,7 +77,13 @@ export class XtalInDetail extends HTMLElement {
             composed: this.composed
         });
         this.dispatchEvent(newEvent);
+        if (!this._isSubClass) {
+            this.setValue(newEvent.detail);
+        }
     }
+    // set isSubClass(val){
+    //     this._isSubClass = val;
+    // }
     static get observedAttributes() {
         return [bubbles, composed, dispatch, detail, event_name];
     }
@@ -147,5 +145,4 @@ export function registerTagName(defaultTagName, cls) {
     }
 }
 registerTagName(defaultTagName, XtalInDetail);
-// })();
 //# sourceMappingURL=xtal-in-detail.js.map
