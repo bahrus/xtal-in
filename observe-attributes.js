@@ -20,6 +20,13 @@ class ObserveAttributes extends XtalInDetail {
                 break;
         }
     }
+    getValues(attributes) {
+        const attribs = {};
+        attributes.forEach(attrib => {
+            attribs[attrib] = this._child[attrib];
+        });
+        return attribs;
+    }
     addMutationObserver() {
         this.disconnect();
         if (!this._child)
@@ -31,6 +38,8 @@ class ObserveAttributes extends XtalInDetail {
                     mutation
                 };
             });
+            const attribs = this.filter ? this.getValues(this.filter) : this._child.attributes;
+            this.setValue(attribs);
         });
         this._observer.observe(this._child, config);
     }

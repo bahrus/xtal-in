@@ -103,7 +103,6 @@ xtal-in-detail allows you to post an event any time a watched property, "detail"
 
 Now if we go back to the first web component, add-event-listener, it inherits this property, so when the button is clicked, it can pass the detail object via binding.
 
-However, this isn't sufficient for many cases.  add-event-listener also allows you to specify  a property function called "detailFn", which is passed the triggering event, as well as the detail property.  This user defined function can look at the target element, and formulate a meaningful composite detail object (or promise) based on attributes associated with the target element as well as it's own "detail" binding property.
 
 ## Monitoring Attribute Changes
 
@@ -117,8 +116,6 @@ In addition to listening for click or input events, one can listen for attribute
 ```
 
 observe-attributes supports a "filter" attribute/property that can specify an array of specific attributes to watch.
-
-
 
 
 

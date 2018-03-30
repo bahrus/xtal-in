@@ -116,20 +116,33 @@ class AddEventListener extends XtalInDetail {
                 }
                 eventObj.values = values;
             }
-            this.detail = eventObj;
-            this.setValue(values);
+            subscriber.detail = eventObj;
+            subscriber.setValue(values);
         });
         //this.dispatch = true;
         // window.requestAnimationFrame(() => {
         //     this.dispatch = false;
         // })
     }
+    removeElement(array, element) {
+        //https://blog.mariusschulz.com/2016/07/16/removing-elements-from-javascript-arrays
+        const index = array.indexOf(element);
+        if (index !== -1) {
+            array.splice(index, 1);
+        }
+    }
     disconnect() {
-        this.parentElement.removeEventListener(this._on, this.handleEvent);
+        const parent = this.parentElement;
+        let bundledAllHandlers = parent[canonicalTagName];
+        const bundledHandlersForSingleEventType = bundledAllHandlers[this._on];
+        this.removeElement(bundledHandlersForSingleEventType, this);
+        if (bundledHandlersForSingleEventType.length === 0) {
+            this.parentElement.removeEventListener(this._on, this.handleEvent);
+        }
     }
     connectedCallback() {
         super.connectedCallback();
-        this._upgradeProperties(['on', 'stopPropagation', 'detailFn']);
+        this._upgradeProperties(['on', 'stopPropagation', 'valueProps']);
     }
     disconnectedCallback() {
         //super.disconnectedCallback();
