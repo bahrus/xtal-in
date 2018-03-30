@@ -95,10 +95,10 @@ In some sense, this documentation is out of order.  The custom element add-event
 
 A critical feature of [custom events](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent) is the ability to pass a [detail](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/detail) as part of the event.
 
-xtal-in-detail allows you to post an event any time a watched property, "detail", changes.  So in the context of a Polymer template, the markup could look as follows:
+custom-event (canonical name:  xtal-in-detail) allows you to post an event any time a watched property, "detail", changes.  So in the context of a Polymer template, the markup could look as follows:
 
 ```html
-<xtal-in-detail dispatch detail="[[whatIFound]]" event-name="at bottom of the ocean" bubbles composed>
+<custom-event dispatch detail="[[whatIFound]]" event-name="at bottom of the ocean" bubbles composed></custom-event>
 ```
 
 Now if we go back to the first web component, add-event-listener, it inherits this property, so when the button is clicked, it can pass the detail object via binding.
@@ -117,7 +117,7 @@ In addition to listening for click or input events, one can listen for attribute
 
 observe-attributes supports a "filter" attribute/property that can specify an array of specific attributes to watch.
 
-
+Canonical tag name:  "xtal-in-detail"
 
 ## Install the Polymer-CLI
 

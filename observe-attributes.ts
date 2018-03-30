@@ -1,4 +1,4 @@
-import { XtalInDetail, IXtalInDetailProperties, registerTagName } from './xtal-in-detail.js';
+import { XtalCustomEvent, IXtalInDetailProperties, registerTagName } from './custom-event.js';
 
 const defaultTagName = 'observe-attributes';
 const canonicalTagName = 'xtal-in-attributes';
@@ -7,7 +7,7 @@ export interface IObserveMutationsProperties {
     filter: string[]
 
 }
-class ObserveAttributes extends XtalInDetail implements IObserveMutationsProperties {
+class ObserveAttributes extends XtalCustomEvent implements IObserveMutationsProperties {
     _filter: string[]
     get filter() {
         return this._filter;

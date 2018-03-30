@@ -1,8 +1,8 @@
-import { XtalInDetail, registerTagName } from './xtal-in-detail.js';
+import { XtalCustomEvent, registerTagName } from './custom-event.js';
 const defaultTagName = 'observe-attributes';
 const canonicalTagName = 'xtal-in-attributes';
 const filter = 'filter';
-class ObserveAttributes extends XtalInDetail {
+class ObserveAttributes extends XtalCustomEvent {
     get filter() {
         return this._filter;
     }

@@ -1,5 +1,5 @@
 declare var xtal_ize_event;
-import { XtalInDetail, IXtalInDetailProperties, registerTagName } from './xtal-in-detail.js';
+import { XtalCustomEvent, IXtalInDetailProperties, registerTagName } from './custom-event.js';
 export interface IAddEventListener extends IXtalInDetailProperties {
     //detailFn: (detail: any, ref: IAddEventListener) => any;
     valueProps: string | string[];
@@ -19,7 +19,7 @@ const valueProps = 'value-props';
 
 const defaultTagName = 'add-event-listener';
 const canonicalTagName = 'xtal-in-curry';
-class AddEventListener extends XtalInDetail implements IAddEventListener {
+class AddEventListener extends XtalCustomEvent implements IAddEventListener {
     constructor(){
         super();
         this._isSubClass = true;
@@ -159,7 +159,7 @@ class AddEventListener extends XtalInDetail implements IAddEventListener {
     disconnect() {
         const parent =this.parentElement;
         let bundledAllHandlers = parent[canonicalTagName];
-        const bundledHandlersForSingleEventType = bundledAllHandlers[this._on] as XtalInDetail[];
+        const bundledHandlersForSingleEventType = bundledAllHandlers[this._on] as CustomEvent[];
         this.removeElement( bundledHandlersForSingleEventType, this);
         if(bundledHandlersForSingleEventType.length === 0){
             this.parentElement.removeEventListener(this._on, this.handleEvent);

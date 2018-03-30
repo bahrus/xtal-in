@@ -1,11 +1,11 @@
-import { XtalInDetail, registerTagName } from './xtal-in-detail.js';
+import { XtalCustomEvent, registerTagName } from './custom-event.js';
 const stopPropagation = 'stop-propagation';
 const on = 'on';
 const ifMatches = 'if-matches';
 const valueProps = 'value-props';
 const defaultTagName = 'add-event-listener';
 const canonicalTagName = 'xtal-in-curry';
-class AddEventListener extends XtalInDetail {
+class AddEventListener extends XtalCustomEvent {
     constructor() {
         super();
         this._isSubClass = true;
