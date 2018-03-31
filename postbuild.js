@@ -6,7 +6,7 @@ function processFile(filePath, newLines){
         const tl = line.trimLeft();
         if(tl.startsWith('import ')) return;
         if(tl.startsWith('export ')){
-            newLines.push(line.replace('export '), '');
+            newLines.push(line.replace('export ', ''));
         }else{
             newLines.push(line);
         }
@@ -21,7 +21,7 @@ let newContent = `
 ${newLines.join('\n')}
 })();  
     `;
-console.log(newContent);
+fs.writeFileSync("xtal-in.js", newContent.js);
 
 
 
