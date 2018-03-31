@@ -120,6 +120,20 @@ observe-attributes supports a "filter" attribute/property that can specify an ar
 
 Canonical tag name:  "xtal-in-detail"
 
+## Monitoring Children
+
+```html
+ <observe-children dispatch event-name="childrenChanged" bubbles composed>
+...
+</observe-children>
+```
+
+## ES6 Modules or not?
+
+This package utilizes ES6 modules.  Each custom element is a separate module, which inherits custom-event.js.  From a developer point of view, this is great, and for modern browsers, it works great.
+
+However, for browsers that don't support ES6 modules, an alternative file, xtal-in.js, bundles all the modules together.  It can be referenced using a classic script tag.  No require.js or any other polyfill is required.
+
 ## Install the Polymer-CLI
 
 First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. Then run `polymer serve` to serve your element locally.
