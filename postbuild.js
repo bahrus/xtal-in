@@ -15,7 +15,7 @@ function processFile(filePath, newLines){
 }
 const newLines = [];
 processFile('custom-event.js', newLines);
-processFile('obser-attributes.js', newLines);
+processFile('observe-attributes.js', newLines);
 let newContent = `
 (function () {
 ${newLines.join('\n')}
