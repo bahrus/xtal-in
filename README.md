@@ -91,7 +91,7 @@ If you want to use this component in a reusable component, which includes html t
 
 ## Details, details
 
-In some sense, this documentation is out of order.  The custom element add-event-listener described above, extends the base component, xtal-in-detail, which we've not mentioned yet (cuz it's kind of boring).  This component is also renamable, as described above.  Other names that could be more readable would be bubble-prop, or maybe prop-rebound.  It's difficult to see how you would use this component directly, but who knows?
+In some sense, this documentation is out of order.  The custom element add-event-listener described above, extends the base component, custom-event, which we've not mentioned yet (cuz it's kind of boring).  This component is also renamable, as described above.  Other names that could be more readable would be bubble-prop, or maybe prop-rebound.  It's difficult to see how you would use this component directly, but who knows?
 
 A critical feature of [custom events](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent) is the ability to pass a [detail](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/detail) as part of the event.
 
@@ -103,6 +103,7 @@ custom-event (canonical name:  xtal-in-detail) allows you to post an event any t
 
 Now if we go back to the first web component, add-event-listener, it inherits this property, so when the button is clicked, it can pass the detail object via binding.
 
+After the event has finished, custom-event places the (modified) detail property into the value property, which fires a value-changed event that Polymer elements can auto-bind to.
 
 ## Monitoring Attribute Changes
 

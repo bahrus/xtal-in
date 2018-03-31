@@ -1,6 +1,6 @@
 {
   "sources":[
-    "xtal-in-detail.js",
+    "custom-event.js",
     "add-event-listener.js",
     "observe-attributes.js"
   ],
@@ -12,15 +12,8 @@
   },
   "builds":[
     {
-      "preset": "es5-bundled"
-    },
-    {
       "name": "ES5",
-      "js": {"minify": false, "compile": true},
-      "sources":[
-        "xtal-in-detail.js",
-        "xtal-ize-event.js"
-      ]
+      "js": {"minify": true, "compile": true}
     },
     {
       "name": "ES6",

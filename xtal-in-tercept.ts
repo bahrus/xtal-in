@@ -1,3 +1,3 @@
-import { XtalInDetail , IXtalInDetailProperties} from 'xtal-in-detail.js';
+import { XtalCustomEvent , IXtalInDetailProperties} from 'custom-event.js';
 
 class XtalInTercept{}

@@ -2,7 +2,7 @@
   "entrypoint": "xtal-ize-event.js",
   "fragments": [],
   "sources": [
-    "xtal-in-detail.js",
+    "custom-event.js",
     "add-event-listener.js",
     "observe-attributes.js",
     "xtal-ize-event.js"
@@ -12,32 +12,11 @@
   ],
   "builds": [
     {
-      "name": "es5-bundled",
+      "name": "ES5",
       "js": {
         "minify": true,
         "compile": true
-      },
-      "css": {
-        "minify": true
-      },
-      "html": {
-        "minify": true
-      },
-      "bundle": true,
-      "addServiceWorker": true,
-      "addPushManifest": false,
-      "preset": "es5-bundled"
-    },
-    {
-      "name": "ES5",
-      "js": {
-        "minify": false,
-        "compile": true
-      },
-      "sources": [
-        "xtal-in-detail.js",
-        "xtal-ize-event.js"
-      ]
+      }
     },
     {
       "name": "ES6",
