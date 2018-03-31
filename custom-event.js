@@ -103,9 +103,8 @@ export class XtalCustomEvent extends HTMLElement {
     onPropsChange() {
         if (!this._dispatch || !this._detail || (!this.eventName))
             return;
-        console.log('debounce duration = ' + this._debounceDuration);
-        if (this._deboundFunction) {
-            this._deboundFunction();
+        if (this._debounceFunction) {
+            this._debounceFunction();
         }
         else {
             this.emitEvent();
@@ -157,7 +156,7 @@ export class XtalCustomEvent extends HTMLElement {
             case debounce_duration:
                 this._debounceDuration = parseFloat(newValue);
                 if (this._debounceDuration > 0) {
-                    this._deboundFunction = debounce(() => {
+                    this._debounceFunction = debounce(() => {
                         this.emitEvent();
                     }, this._debounceDuration);
                 }

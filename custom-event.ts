@@ -90,7 +90,7 @@ export class XtalCustomEvent extends HTMLElement implements IXtalInDetailPropert
         this._detail = val;
         this.onPropsChange();
     }
-    _deboundFunction;
+    _debounceFunction;
     _debounceDuration: number = 0;
     get debounceDuration(){
         return this._debounceDuration;
@@ -126,9 +126,8 @@ export class XtalCustomEvent extends HTMLElement implements IXtalInDetailPropert
 
     onPropsChange() {
         if (!this._dispatch || !this._detail || (!this.eventName)) return;
-        console.log('debounce duration = ' + this._debounceDuration);
-        if(this._deboundFunction){
-            this._deboundFunction();
+        if(this._debounceFunction){
+            this._debounceFunction();
         }else{
             this.emitEvent();
         }
@@ -186,7 +185,7 @@ export class XtalCustomEvent extends HTMLElement implements IXtalInDetailPropert
             case debounce_duration:
                 this._debounceDuration = parseFloat(newValue);
                 if(this._debounceDuration > 0){
-                    this._deboundFunction = debounce(() =>{
+                    this._debounceFunction = debounce(() =>{
                         this.emitEvent()
                     }, this._debounceDuration)
                 }
