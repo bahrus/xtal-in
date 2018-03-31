@@ -3,8 +3,41 @@ const stopPropagation = 'stop-propagation';
 const on = 'on';
 const ifMatches = 'if-matches';
 const valueProps = 'value-props';
+const merge = 'merge';
 const defaultTagName1 = 'add-event-listener';
 const canonicalTagName2 = 'xtal-in-curry';
+// from https://stackoverflow.com/questions/27936772/how-to-deep-merge-instead-of-shallow-merge
+/**
+* Simple object check.
+* @param item
+* @returns {boolean}
+*/
+export function isObject(item) {
+    return (item && typeof item === 'object' && !Array.isArray(item));
+}
+/**
+ * Deep merge two objects.
+ * @param target
+ * @param ...sources
+ */
+export function mergeDeep(target, ...sources) {
+    if (!sources.length)
+        return target;
+    const source = sources.shift();
+    if (isObject(target) && isObject(source)) {
+        for (const key in source) {
+            if (isObject(source[key])) {
+                if (!target[key])
+                    Object.assign(target, { [key]: {} });
+                mergeDeep(target[key], source[key]);
+            }
+            else {
+                Object.assign(target, { [key]: source[key] });
+            }
+        }
+    }
+    return mergeDeep(target, ...sources);
+}
 class AddEventListener extends XtalCustomEvent {
     constructor() {
         super();
@@ -19,6 +52,17 @@ class AddEventListener extends XtalCustomEvent {
         }
         else {
             this.removeAttribute(stopPropagation);
+        }
+    }
+    get merge() {
+        return this._merge;
+    }
+    set merge(val) {
+        if (val) {
+            this.setAttribute(merge, '');
+        }
+        else {
+            this.removeAttribute(merge);
         }
     }
     get on() {
@@ -40,7 +84,7 @@ class AddEventListener extends XtalCustomEvent {
         this.setAttribute(valueProps, val.toString());
     }
     static get observedAttributes() {
-        return super.observedAttributes.concat([stopPropagation, on, ifMatches, valueProps]);
+        return super.observedAttributes.concat([stopPropagation, on, ifMatches, valueProps, merge]);
     }
     attributeChangedCallback(name, oldValue, newValue) {
         super.attributeChangedCallback(name, oldValue, newValue);
@@ -50,6 +94,9 @@ class AddEventListener extends XtalCustomEvent {
             //     break;
             case stopPropagation:
                 this._stopPropagation = newValue !== null;
+                break;
+            case merge:
+                this._merge = newValue !== null;
                 break;
             case valueProps:
                 if (newValue === null) {
@@ -100,6 +147,12 @@ class AddEventListener extends XtalCustomEvent {
             }
             if (subscriber.stopPropagation)
                 e.stopPropagation();
+            if (this._merge) {
+                const ce = e;
+                if (!ce.detail)
+                    ce.detail = {};
+                mergeDeep(ce.detail, subscriber.detail);
+            }
             const eventObj = {
                 context: subscriber.detail
             };
