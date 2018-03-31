@@ -21,7 +21,7 @@ let newContent = `
 ${newLines.join('\n')}
 })();  
     `;
-fs.writeFileSync("xtal-in.js", newContent.js);
+fs.writeFileSync("xtal-in.js", newContent.join(''), 'utf8');
 
 
 
