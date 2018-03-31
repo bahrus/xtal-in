@@ -8,10 +8,10 @@
 
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <!-- <script type="module" src="../add-event-listener.js" data-was="add-event-listener" data-package='npm.xtal-in' data-is="tl-dr"></script> -->
-    <!-- <script type="module" src="../add-event-listener.js"></script>
+    <script type="module" src="../add-event-listener.js"></script>
     <script type="module" src="../observe-attributes.js"></script>
-    <script type="module" src="../observe-children.js"></script> -->
-    <script src="../xtal-in.js"></script>
+    <script type="module" src="../observe-children.js"></script>
+    <!-- <script src="../xtal-in.js"></script> -->
     <custom-style>
       <style is="custom-style" include="demo-pages-shared-styles">
       </style>
@@ -28,7 +28,7 @@
       <demo-snippet>
         <template>
           <div>
-              <add-event-listener on="click" dispatch event-name="hello" bubbles composed></add-event-listener>
+              <add-event-listener debounce-duration="2000" on="click" dispatch event-name="hello" bubbles composed></add-event-listener>
               <add-event-listener on="click" if-matches="#test1" dispatch event-name="test1" bubbles composed></add-event-listener>
               <button>Click to dispatch custom event</button>
               <button id="test1">Matching Test</button>
