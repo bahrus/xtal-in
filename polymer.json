@@ -2,7 +2,9 @@
   "sources":[
     "custom-event.js",
     "add-event-listener.js",
-    "observe-attributes.js"
+    "observe-attributes.js",
+    "observe-children.js",
+    "xtal-in.js"
   ],
   "entrypoint": "xtal-ize-event.js",
   "lint": {

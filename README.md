@@ -4,6 +4,8 @@
 
 \<xtal-in-*\> is a dependency-free suite of components that generates events with semantically meaningful, and even unique, discoverable event names.
 
+The -in- in xtal-in- refers to an "input channel" -- which can be a clickable dom element, or more abstract things like attributes, child mutations, etc.
+
 In the [groundbreaking blog post "Custom Elements That Work Anywhere"](http://robdodson.me/interoperable-custom-elements/), Rob Dodson blegs:
 
 > **In general, don't bubble events unless they are semantically meaningful.** For example, *changed* is not a very semantically
@@ -127,6 +129,8 @@ Canonical tag name:  "xtal-in-detail"
 ...
 </observe-children>
 ```
+
+Canonical name: xtal-in-children
 
 ## ES6 Modules or not?
 
