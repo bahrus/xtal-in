@@ -1,6 +1,6 @@
 import { XtalCustomEvent, registerTagName } from './custom-event.js';
-const defaultTagName = 'observe-children';
-const canonicalTagName = 'xtal-in-children';
+const defaultTagName_xtal_in_children = 'observe-children';
+const canonicalTagName_xtal_in_children = 'xtal-in-children';
 class ObserveChildren extends XtalCustomEvent {
     disconnect() {
         if (this._observer)
@@ -28,8 +28,8 @@ class ObserveChildren extends XtalCustomEvent {
         this.disconnect();
     }
 }
-registerTagName(defaultTagName, ObserveChildren);
+registerTagName(defaultTagName_xtal_in_children, ObserveChildren);
 class XtalInChildren extends ObserveChildren {
 }
-customElements.define(canonicalTagName, XtalInChildren);
+customElements.define(canonicalTagName_xtal_in_children, XtalInChildren);
 //# sourceMappingURL=observe-children.js.map

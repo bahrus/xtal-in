@@ -3,8 +3,8 @@ const stopPropagation = 'stop-propagation';
 const on = 'on';
 const ifMatches = 'if-matches';
 const valueProps = 'value-props';
-const defaultTagName = 'add-event-listener';
-const canonicalTagName = 'xtal-in-curry';
+const defaultTagName1 = 'add-event-listener';
+const canonicalTagName2 = 'xtal-in-curry';
 class AddEventListener extends XtalCustomEvent {
     constructor() {
         super();
@@ -69,10 +69,10 @@ class AddEventListener extends XtalCustomEvent {
             case on:
                 this._on = newValue;
                 const parent = this.parentElement;
-                let bundledAllHandlers = parent[canonicalTagName];
+                let bundledAllHandlers = parent[canonicalTagName2];
                 if (this._on) {
                     if (!bundledAllHandlers) {
-                        bundledAllHandlers = parent[canonicalTagName] = {};
+                        bundledAllHandlers = parent[canonicalTagName2] = {};
                     }
                     let bundledHandlersForSingleEventType = bundledAllHandlers[this._on];
                     if (!bundledHandlersForSingleEventType) {
@@ -133,7 +133,7 @@ class AddEventListener extends XtalCustomEvent {
     }
     disconnect() {
         const parent = this.parentElement;
-        let bundledAllHandlers = parent[canonicalTagName];
+        let bundledAllHandlers = parent[canonicalTagName2];
         const bundledHandlersForSingleEventType = bundledAllHandlers[this._on];
         this.removeElement(bundledHandlersForSingleEventType, this);
         if (bundledHandlersForSingleEventType.length === 0) {
@@ -149,8 +149,8 @@ class AddEventListener extends XtalCustomEvent {
         this.disconnect();
     }
 }
-registerTagName(defaultTagName, AddEventListener);
+registerTagName(defaultTagName1, AddEventListener);
 class XtalInCurry extends AddEventListener {
 }
-customElements.define(canonicalTagName, XtalInCurry);
+customElements.define(canonicalTagName2, XtalInCurry);
 //# sourceMappingURL=add-event-listener.js.map

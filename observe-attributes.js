@@ -1,6 +1,6 @@
 import { XtalCustomEvent, registerTagName } from './custom-event.js';
-const defaultTagName = 'observe-attributes';
-const canonicalTagName = 'xtal-in-attributes';
+const defaultTagName_xtal_in_attributes = 'observe-attributes';
+const canonicalTagName_xtal_in_attributes = 'xtal-in-attributes';
 const filter = 'filter';
 class ObserveAttributes extends XtalCustomEvent {
     get filter() {
@@ -68,8 +68,8 @@ class ObserveAttributes extends XtalCustomEvent {
         this.getChild();
     }
 }
-registerTagName(defaultTagName, ObserveAttributes);
+registerTagName(defaultTagName_xtal_in_attributes, ObserveAttributes);
 class XtalInAttributes extends ObserveAttributes {
 }
-customElements.define(canonicalTagName, XtalInAttributes);
+customElements.define(canonicalTagName_xtal_in_attributes, XtalInAttributes);
 //# sourceMappingURL=observe-attributes.js.map

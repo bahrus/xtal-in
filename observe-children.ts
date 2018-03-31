@@ -1,7 +1,7 @@
 import { XtalCustomEvent, IXtalInDetailProperties, registerTagName } from './custom-event.js';
 
-const defaultTagName = 'observe-children';
-const canonicalTagName = 'xtal-in-children';
+const defaultTagName_xtal_in_children = 'observe-children';
+const canonicalTagName_xtal_in_children = 'xtal-in-children';
 
 class ObserveChildren extends XtalCustomEvent{
     _observer: MutationObserver;
@@ -34,6 +34,6 @@ class ObserveChildren extends XtalCustomEvent{
     }
 }
 
-registerTagName(defaultTagName, ObserveChildren);
+registerTagName(defaultTagName_xtal_in_children, ObserveChildren);
 class XtalInChildren extends ObserveChildren { }
-customElements.define(canonicalTagName, XtalInChildren);
+customElements.define(canonicalTagName_xtal_in_children, XtalInChildren);

@@ -1,7 +1,7 @@
 import { XtalCustomEvent, IXtalInDetailProperties, registerTagName } from './custom-event.js';
 
-const defaultTagName = 'observe-attributes';
-const canonicalTagName = 'xtal-in-attributes';
+const defaultTagName_xtal_in_attributes = 'observe-attributes';
+const canonicalTagName_xtal_in_attributes = 'xtal-in-attributes';
 const filter = 'filter';
 export interface IObserveMutationsProperties {
     filter: string[]
@@ -83,6 +83,6 @@ class ObserveAttributes extends XtalCustomEvent implements IObserveMutationsProp
     }
 }
 
-registerTagName(defaultTagName, ObserveAttributes);
+registerTagName(defaultTagName_xtal_in_attributes, ObserveAttributes);
 class XtalInAttributes extends ObserveAttributes { }
-customElements.define(canonicalTagName, XtalInAttributes);
+customElements.define(canonicalTagName_xtal_in_attributes, XtalInAttributes);
