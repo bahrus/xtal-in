@@ -1,7 +1,11 @@
-const fs = require('fs-extra')
+const fs = require('fs')
 try{
-    fs.copySync('build/ES5/src/v0/xtal-in.js', 'build/ES5/xtal-in.js')
-    fs.copySync('build/ES6/src/v0/xtal-in.js', 'build/ES6/xtal-in.js')
+    fs.readFileSync('custom-event.js', 'utf8', function(err, data) {
+        if (err) throw err;
+        console.log('OK: ' + filename);
+        console.log(data)
+      });
+
 }catch(err){
     console.error(err);
 }
