@@ -1,20 +1,27 @@
 const fs = require('fs')
-try{
-    const contents = fs.readFileSync('custom-event.js', 'utf8');
+function processFile(filePath, newLines){
+    const contents = fs.readFileSync(filePath, 'utf8');
     const lines = contents.split('\n');
-    const newLines = [];
     lines.forEach(line =>{
-        if(line.trimLeft().startsWith('import ')) return;
-        newLines.push(line);
+        const tl = line.trimLeft();
+        if(tl.startsWith('import ')) return;
+        if(tl.startsWith('export ')){
+            newLines.push(line.replace('export '), '');
+        }else{
+            newLines.push(line);
+        }
+        
     })
-    let newContent = `
+}
+const newLines = [];
+processFile('custom-event.js', newLines);
+processFile('obser-attributes.js', newLines);
+let newContent = `
 (function () {
 ${newLines.join('\n')}
 })();  
     `;
-    console.log(newContent);
+console.log(newContent);
 
-}catch(err){
-    console.error(err);
-}
+
 
