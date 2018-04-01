@@ -134,9 +134,28 @@ Canonical name: xtal-in-children
 
 ## ES6 Modules or not?
 
-This package utilizes ES6 modules.  Each custom element is a separate module, which inherits custom-event.js.  From a developer point of view, this is great, and for modern browsers, it works great.
+This package utilizes ES6 modules.  Each custom element is a separate module, which inherits from custom-event.js.  From a developer point of view, this is great, and for modern browsers, it works great.
 
 However, for browsers that don't support ES6 modules, an alternative file, xtal-in.js, bundles all the modules together.  It can be referenced using a classic script tag.  No require.js or any other polyfill is required.
+
+## And now for something completely different
+
+One of the key features of all view libraries, these days, is the ability to pass properties down.  They all require adding custom, proprietary markup to the DOM markup. (Yes, tagged literal based view libraries are the least proprietary).
+
+We provide here a small component, that allows passing properties down, while leaving the markup in pristine condition.  (True, there will be an area of markup where these custom elements get added to the markup, but they will tend to all be bunched together.  We are centralizing the contrived markup into cordoned-off areas). Would it be sufficient for a large application?  Perhaps not.  But it does have the virtue of leaving letting you decide which view library to use until later.
+
+If children are added inside an add-event-listener web component, then those children will be passed the event detail.
+
+We can have markup as follows:
+
+
+```html
+<add-event-listener on="click" dispatch event-name="wtf" bubbles composed>
+    <cascade-down select="#myTargetDiv" prop="innerText"></cascade-down>
+</add-event-listener>
+```
+
+If trying to set property innerHTML or nodeValue, html tags will first be stripped.
 
 ## Install the Polymer-CLI
 
