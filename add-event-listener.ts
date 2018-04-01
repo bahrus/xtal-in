@@ -1,4 +1,3 @@
-declare var xtal_ize_event;
 import { XtalCustomEvent, IXtalInDetailProperties, registerTagName } from './custom-event.js';
 export interface IAddEventListener extends IXtalInDetailProperties {
     //detailFn: (detail: any, ref: IAddEventListener) => any;
@@ -16,47 +15,12 @@ const stopPropagation = 'stop-propagation';
 const on = 'on';
 const ifMatches = 'if-matches';
 const valueProps = 'value-props';
-const merge = 'merge';
+
 
 const defaultTagName1 = 'add-event-listener';
 const canonicalTagName2 = 'xtal-in-curry';
 
-// from https://stackoverflow.com/questions/27936772/how-to-deep-merge-instead-of-shallow-merge
-/**
-* Simple object check.
-* @param item
-* @returns {boolean}
-*/
-export function isObject(item) {
-    return (item && typeof item === 'object' && !Array.isArray(item));
-}
-
-
-/**
- * Deep merge two objects.
- * @param target
- * @param ...sources
- */
-export function mergeDeep(target, ...sources) {
-    if (!sources.length) return target;
-    const source = sources.shift();
-
-    if (isObject(target) && isObject(source)) {
-        for (const key in source) {
-            if (isObject(source[key])) {
-                if (!target[key]) Object.assign(target, { [key]: {} });
-                mergeDeep(target[key], source[key]);
-            } else {
-                Object.assign(target, { [key]: source[key] });
-            }
-        }
-    }
-
-    return mergeDeep(target, ...sources);
-}
-
-
-class AddEventListener extends XtalCustomEvent implements IAddEventListener {
+export class AddEventListener extends XtalCustomEvent implements IAddEventListener {
     constructor() {
         super();
         this._isSubClass = true;
@@ -74,17 +38,7 @@ class AddEventListener extends XtalCustomEvent implements IAddEventListener {
         }
     }
 
-    _merge: boolean;
-    get merge(){
-        return this._merge;
-    }
-    set merge(val){
-        if(val){
-            this.setAttribute(merge, '');
-        }else{
-            this.removeAttribute(merge);
-        }
-    }
+
 
     _on: string;
     get on() {
@@ -110,7 +64,7 @@ class AddEventListener extends XtalCustomEvent implements IAddEventListener {
     }
 
     static get observedAttributes() {
-        return super.observedAttributes.concat([stopPropagation, on, ifMatches, valueProps, merge]);
+        return super.observedAttributes.concat([stopPropagation, on, ifMatches, valueProps]);
     }
     attributeChangedCallback(name, oldValue, newValue: string) {
         super.attributeChangedCallback(name, oldValue, newValue);
@@ -121,9 +75,7 @@ class AddEventListener extends XtalCustomEvent implements IAddEventListener {
             case stopPropagation:
                 this._stopPropagation = newValue !== null;
                 break;
-            case merge:
-                this._merge = newValue !== null;
-                break;
+
             case valueProps:
                 if (newValue === null) {
                     this._valueProps = null;
@@ -166,21 +118,19 @@ class AddEventListener extends XtalCustomEvent implements IAddEventListener {
         }
     }
     //_boundHandleEvent;
+    modifyEvent(e: Event, subscriber: AddEventListener){
+        if (subscriber.stopPropagation) e.stopPropagation();
 
+    }
 
     handleEvent(e: Event) {
-        const bundledHandlers = this['xtal-in-curry'][e.type] as XtalInCurry[];
+        const bundledHandlers = this['xtal-in-curry'][e.type] as AddEventListener[];
         bundledHandlers.forEach(subscriber => {
             const target = e.target;
             if (subscriber._ifMatches) {
                 if (!(target as HTMLElement).matches(subscriber._ifMatches)) return;
             }
-            if (subscriber.stopPropagation) e.stopPropagation();
-            if(this._merge){
-                const ce = e as CustomEventInit;
-                if(!ce.detail) ce.detail = {};
-                mergeDeep(ce.detail, subscriber.detail);
-            }
+            this.modifyEvent(e, subscriber);
             const eventObj = {
                 context: subscriber.detail
             } as IEventPacket;
@@ -232,10 +182,11 @@ class AddEventListener extends XtalCustomEvent implements IAddEventListener {
         this.disconnect();
     }
 
-
-
 }
-registerTagName(defaultTagName1, AddEventListener);
-class XtalInCurry extends AddEventListener { }
-customElements.define(canonicalTagName2, XtalInCurry);
+if(!customElements.get(canonicalTagName2)){
+    registerTagName(defaultTagName1, AddEventListener);
+    class XtalInCurry extends AddEventListener { }
+    customElements.define(canonicalTagName2, XtalInCurry);
+}
+
 
