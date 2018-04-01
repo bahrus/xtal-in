@@ -6,7 +6,7 @@
     "observe-children.js",
     "xtal-in.js"
   ],
-  "entrypoint": "xtal-ize-event.js",
+  "entrypoint": "xtal-in.js",
   "lint": {
     "rules": [
       "polymer-2"

@@ -1,5 +1,5 @@
 {
-  "entrypoint": "xtal-ize-event.js",
+  "entrypoint": "xtal-in.js",
   "fragments": [],
   "sources": [
     "custom-event.js",
@@ -7,7 +7,7 @@
     "observe-attributes.js",
     "observe-children.js",
     "xtal-in.js",
-    "xtal-ize-event.js"
+    "xtal-in.js"
   ],
   "extraDependencies": [
     "bower_components\\webcomponentsjs\\*.js"
