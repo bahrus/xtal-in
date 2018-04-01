@@ -3,6 +3,7 @@ const stopPropagation = 'stop-propagation';
 const on = 'on';
 const ifMatches = 'if-matches';
 const valueProps = 'value-props';
+const cascadeDown = 'cascade-down';
 const defaultTagName_addEventListener = 'add-event-listener';
 const canonicalTagName_XtalInCurry = 'xtal-in-curry';
 export class AddEventListener extends XtalCustomEvent {
@@ -39,8 +40,14 @@ export class AddEventListener extends XtalCustomEvent {
     set valueProps(val) {
         this.setAttribute(valueProps, val.toString());
     }
+    get cascadeDown() {
+        return this.getAttribute(cascadeDown);
+    }
+    set cascadeDown(val) {
+        this.setAttribute(cascadeDown, val);
+    }
     static get observedAttributes() {
-        return super.observedAttributes.concat([stopPropagation, on, ifMatches, valueProps]);
+        return super.observedAttributes.concat([stopPropagation, on, ifMatches, valueProps, cascadeDown]);
     }
     attributeChangedCallback(name, oldValue, newValue) {
         super.attributeChangedCallback(name, oldValue, newValue);
@@ -65,6 +72,9 @@ export class AddEventListener extends XtalCustomEvent {
                 }
             case ifMatches:
                 this._ifMatches = newValue;
+                break;
+            case cascadeDown:
+                this.propagateDown();
                 break;
             case on:
                 this._on = newValue;
@@ -94,6 +104,19 @@ export class AddEventListener extends XtalCustomEvent {
         if (subscriber.stopPropagation)
             e.stopPropagation();
     }
+    propagateDown() {
+        if (!this.eventName)
+            return;
+        const targetAttr = this.eventName + '-props';
+        const targets = this.parentElement.querySelectorAll('[' + targetAttr + ']');
+        for (let i = 0, ii = targets.length; i < ii; i++) {
+            const target = targets[i];
+            const props = target.getAttribute(targetAttr).split(',');
+            props.forEach(prop => {
+                target[prop] = this.value;
+            });
+        }
+    }
     handleEvent(e) {
         const bundledHandlers = this['xtal-in-curry'][e.type];
         bundledHandlers.forEach(subscriber => {
@@ -103,12 +126,11 @@ export class AddEventListener extends XtalCustomEvent {
                     return;
             }
             subscriber.modifyEvent(e, subscriber);
-            const eventObj = {
-                context: subscriber._zoomedDetail
-            };
-            let values;
             if (this._valueProps) {
+                let values;
+                let hasMultipleValues = false;
                 if (Array.isArray(this._valueProps)) {
+                    hasMultipleValues = true;
                     values = {};
                     this._valueProps.forEach(prop => {
                         values[prop] = target[prop];
@@ -117,10 +139,28 @@ export class AddEventListener extends XtalCustomEvent {
                 else {
                     values = target[this._valueProps];
                 }
-                eventObj.values = values;
+                const eventObj = {};
+                if (subscriber._zoomedDetail) {
+                    eventObj.context = subscriber._zoomedDetail;
+                }
+                if (values) {
+                    if (hasMultipleValues) {
+                        eventObj.values = values;
+                    }
+                    else {
+                        eventObj.value = values;
+                    }
+                }
+                subscriber.detail = eventObj;
             }
-            subscriber.detail = eventObj;
-            subscriber.setValue(values);
+            else {
+                subscriber.detail = subscriber._zoomedDetail;
+            }
+            const value = Object.assign({}, subscriber.detail);
+            subscriber.setValue(value);
+            if (subscriber.cascadeDown) {
+                subscriber.propagateDown();
+            }
         });
         //this.dispatch = true;
         // window.requestAnimationFrame(() => {

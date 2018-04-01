@@ -147,8 +147,10 @@ Most of the functionality described here involves events flowing upwards.  Howev
 <add-event-listener on="click" dispatch event-name="wtf" bubbles composed cascade-down></add-event-listener>
 ...
 
-<my-custom-element wtf-prop="myProp"><my-custom-element>
+<my-custom-element wtf-props="myProp"><my-custom-element>
 ```
+
+If multiple properties need to be set to the value of the event, list them with a comma delimiter.
 
 If trying to set property innerHTML or nodeValue, html tags will first be stripped.
 

@@ -9,13 +9,14 @@ export interface IAddEventListener extends IXtalInDetailProperties {
 export interface IEventPacket {
     context: any,
     values: any,
+    value: any
 }
 
 const stopPropagation = 'stop-propagation';
 const on = 'on';
 const ifMatches = 'if-matches';
 const valueProps = 'value-props';
-
+const cascadeDown = 'cascade-down';
 
 const defaultTagName_addEventListener = 'add-event-listener';
 const canonicalTagName_XtalInCurry = 'xtal-in-curry';
@@ -63,8 +64,15 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
         this.setAttribute(valueProps, val.toString());
     }
 
+    get cascadeDown(){
+        return this.getAttribute(cascadeDown);
+    }
+    set cascadeDown(val){
+        this.setAttribute(cascadeDown, val);
+    }
+
     static get observedAttributes() {
-        return super.observedAttributes.concat([stopPropagation, on, ifMatches, valueProps]);
+        return super.observedAttributes.concat([stopPropagation, on, ifMatches, valueProps, cascadeDown]);
     }
     attributeChangedCallback(name, oldValue, newValue: string) {
         super.attributeChangedCallback(name, oldValue, newValue);
@@ -88,6 +96,9 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
                 }
             case ifMatches:
                 this._ifMatches = newValue;
+                break;
+            case cascadeDown:
+                this.propagateDown();
                 break;
             case on:
                 this._on = newValue;
@@ -123,6 +134,19 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
 
     }
 
+    propagateDown(){
+        if(!this.eventName) return;
+        const targetAttr = this.eventName + '-props';
+        const targets = this.parentElement.querySelectorAll('[' + targetAttr + ']');
+        for(let i = 0, ii = targets.length; i < ii; i++){ 
+            const target = targets[i];
+            const props = target.getAttribute(targetAttr).split(',');
+            props.forEach(prop =>{
+                target[prop] = this.value;
+            })
+        }
+    }
+
     handleEvent(e: Event) {
         const bundledHandlers = this['xtal-in-curry'][e.type] as AddEventListener[];
         bundledHandlers.forEach(subscriber => {
@@ -131,12 +155,12 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
                 if (!(target as HTMLElement).matches(subscriber._ifMatches)) return;
             }
             subscriber.modifyEvent(e, subscriber);
-            const eventObj = {
-                context: subscriber._zoomedDetail
-            } as IEventPacket;
-            let values;
             if (this._valueProps) {
+
+                let values;
+                let hasMultipleValues = false;
                 if (Array.isArray(this._valueProps)) {
+                    hasMultipleValues = true;
                     values = {};
                     this._valueProps.forEach(prop => {
                         values[prop] = target[prop]
@@ -144,10 +168,26 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
                 } else {
                     values = target[this._valueProps];
                 }
-                eventObj.values = values;
+                const eventObj = {} as IEventPacket;
+                if(subscriber._zoomedDetail){
+                    eventObj.context = subscriber._zoomedDetail
+                }
+                if(values){
+                    if(hasMultipleValues){
+                        eventObj.values = values;
+                    }else{
+                        eventObj.value = values;
+                    }
+                }
+                subscriber.detail = eventObj;
+            }else{
+                subscriber.detail = subscriber._zoomedDetail;
             }
-            subscriber.detail = eventObj;
-            subscriber.setValue(values);
+            const value = Object.assign({}, subscriber.detail);
+            subscriber.setValue(value);
+            if(subscriber.cascadeDown){
+                subscriber.propagateDown();
+            }
         })
 
         //this.dispatch = true;
