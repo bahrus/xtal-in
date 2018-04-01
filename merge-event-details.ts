@@ -45,6 +45,10 @@ const defaultTagName_MergeEventDetails = 'merge-event-details';
 const canonicalTagName_MergeEventDetails = 'xtal-in-merge-details';
 
 export class MergeEventDetails extends AddEventListener {
+    constructor(){
+        super();
+        this._isSubClass = true;
+    }
     _merge: boolean;
     get merge() {
         return this._merge;
@@ -75,7 +79,13 @@ export class MergeEventDetails extends AddEventListener {
         if(this._merge){
             const ce = e as CustomEventInit;
             if(!ce.detail) ce.detail = {};
-            mergeDeep(ce.detail, subscriber.detail);
+            mergeDeep(ce.detail, subscriber._zoomedDetail);
         }
     }
+}
+
+if(!customElements.get(canonicalTagName_MergeEventDetails)){
+    registerTagName(defaultTagName_MergeEventDetails, AddEventListener);
+    class XtalInCurry extends AddEventListener { }
+    customElements.define(canonicalTagName_MergeEventDetails, XtalInCurry);
 }

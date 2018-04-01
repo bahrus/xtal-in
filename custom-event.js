@@ -6,6 +6,8 @@ const dispatch = 'dispatch';
 const detail = 'detail';
 const event_name = 'event-name';
 const debounce_duration = 'debounce-duration';
+const zoom_in = 'zoom-in';
+const zoom_out = 'zoom-out';
 // Credit David Walsh (https://davidwalsh.name/javascript-debounce-function)
 // Returns a function, that, as long as it continues to be invoked, will not
 // be triggered. The function will be called after it stops being called for
@@ -72,6 +74,7 @@ export class XtalCustomEvent extends HTMLElement {
     }
     set detail(val) {
         this._detail = val;
+        this._zoomedDetail = this.zoom(this._detail);
         this.onPropsChange();
     }
     get debounceDuration() {
@@ -85,6 +88,47 @@ export class XtalCustomEvent extends HTMLElement {
     }
     set eventName(val) {
         this.setAttribute(event_name, val);
+    }
+    get zoomIn() {
+        return this.getAttribute(zoom_in);
+    }
+    set zoomIn(val) {
+        this.setAttribute(zoom_in, val);
+    }
+    get zoomOut() {
+        return this.getAttribute(zoom_out);
+    }
+    set zoomOut(val) {
+        this.setAttribute(zoom_out, val);
+    }
+    zoomInObject(obj) {
+        if (!this.zoomIn)
+            return obj;
+        let returnObj = obj;
+        const split = this.zoomIn.split('.');
+        for (let i = 0, ii = split.length; i < ii; i++) {
+            const selector = split[i];
+            returnObj = returnObj[selector];
+            if (!returnObj)
+                return null;
+        }
+        return returnObj;
+    }
+    zoomOutObject(obj) {
+        if (!this.zoomOut)
+            return obj;
+        let returnObj = obj;
+        this.zoomOut.split('.').forEach(token => {
+            returnObj = {
+                token: returnObj
+            };
+        });
+        return returnObj;
+    }
+    zoom(obj) {
+        if (obj === null)
+            return obj;
+        return this.zoomInObject(this.zoomOutObject(obj));
     }
     get value() {
         return this._value;
@@ -112,7 +156,7 @@ export class XtalCustomEvent extends HTMLElement {
     }
     emitEvent() {
         const newEvent = new CustomEvent(this.eventName, {
-            detail: this.detail,
+            detail: this._zoomedDetail,
             bubbles: this.bubbles,
             composed: this.composed
         });
@@ -125,7 +169,7 @@ export class XtalCustomEvent extends HTMLElement {
     //     this._isSubClass = val;
     // }
     static get observedAttributes() {
-        return [bubbles, composed, dispatch, detail, event_name, debounce_duration];
+        return [bubbles, composed, dispatch, detail, event_name, debounce_duration, zoom_in, zoom_out];
     }
     _upgradeProperties(props) {
         props.forEach(prop => {
@@ -151,7 +195,7 @@ export class XtalCustomEvent extends HTMLElement {
                 this['_' + this.snakeToCamel(name)] = newValue !== null;
                 break;
             case detail:
-                this._detail = JSON.parse(newValue);
+                this._detail = this.zoom(JSON.parse(newValue));
                 break;
             case debounce_duration:
                 this._debounceDuration = parseFloat(newValue);

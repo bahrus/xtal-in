@@ -3,8 +3,8 @@ const stopPropagation = 'stop-propagation';
 const on = 'on';
 const ifMatches = 'if-matches';
 const valueProps = 'value-props';
-const defaultTagName1 = 'add-event-listener';
-const canonicalTagName2 = 'xtal-in-curry';
+const defaultTagName_addEventListener = 'add-event-listener';
+const canonicalTagName_XtalInCurry = 'xtal-in-curry';
 export class AddEventListener extends XtalCustomEvent {
     constructor() {
         super();
@@ -69,10 +69,10 @@ export class AddEventListener extends XtalCustomEvent {
             case on:
                 this._on = newValue;
                 const parent = this.parentElement;
-                let bundledAllHandlers = parent[canonicalTagName2];
+                let bundledAllHandlers = parent[canonicalTagName_XtalInCurry];
                 if (this._on) {
                     if (!bundledAllHandlers) {
-                        bundledAllHandlers = parent[canonicalTagName2] = {};
+                        bundledAllHandlers = parent[canonicalTagName_XtalInCurry] = {};
                     }
                     let bundledHandlersForSingleEventType = bundledAllHandlers[this._on];
                     if (!bundledHandlersForSingleEventType) {
@@ -102,9 +102,9 @@ export class AddEventListener extends XtalCustomEvent {
                 if (!target.matches(subscriber._ifMatches))
                     return;
             }
-            this.modifyEvent(e, subscriber);
+            subscriber.modifyEvent(e, subscriber);
             const eventObj = {
-                context: subscriber.detail
+                context: subscriber._zoomedDetail
             };
             let values;
             if (this._valueProps) {
@@ -136,7 +136,7 @@ export class AddEventListener extends XtalCustomEvent {
     }
     disconnect() {
         const parent = this.parentElement;
-        let bundledAllHandlers = parent[canonicalTagName2];
+        let bundledAllHandlers = parent[canonicalTagName_XtalInCurry];
         const bundledHandlersForSingleEventType = bundledAllHandlers[this._on];
         this.removeElement(bundledHandlersForSingleEventType, this);
         if (bundledHandlersForSingleEventType.length === 0) {
@@ -152,10 +152,10 @@ export class AddEventListener extends XtalCustomEvent {
         this.disconnect();
     }
 }
-if (!customElements.get(canonicalTagName2)) {
-    registerTagName(defaultTagName1, AddEventListener);
+if (!customElements.get(canonicalTagName_XtalInCurry)) {
+    registerTagName(defaultTagName_addEventListener, AddEventListener);
     class XtalInCurry extends AddEventListener {
     }
-    customElements.define(canonicalTagName2, XtalInCurry);
+    customElements.define(canonicalTagName_XtalInCurry, XtalInCurry);
 }
 //# sourceMappingURL=add-event-listener.js.map

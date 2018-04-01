@@ -1,3 +1,4 @@
+import { registerTagName } from './custom-event.js';
 import { AddEventListener } from './add-event-listener.js';
 // from https://stackoverflow.com/questions/27936772/how-to-deep-merge-instead-of-shallow-merge
 /**
@@ -35,6 +36,10 @@ const merge = 'merge';
 const defaultTagName_MergeEventDetails = 'merge-event-details';
 const canonicalTagName_MergeEventDetails = 'xtal-in-merge-details';
 export class MergeEventDetails extends AddEventListener {
+    constructor() {
+        super();
+        this._isSubClass = true;
+    }
     get merge() {
         return this._merge;
     }
@@ -63,8 +68,14 @@ export class MergeEventDetails extends AddEventListener {
             const ce = e;
             if (!ce.detail)
                 ce.detail = {};
-            mergeDeep(ce.detail, subscriber.detail);
+            mergeDeep(ce.detail, subscriber._zoomedDetail);
         }
     }
+}
+if (!customElements.get(canonicalTagName_MergeEventDetails)) {
+    registerTagName(defaultTagName_MergeEventDetails, AddEventListener);
+    class XtalInCurry extends AddEventListener {
+    }
+    customElements.define(canonicalTagName_MergeEventDetails, XtalInCurry);
 }
 //# sourceMappingURL=merge-event-details.js.map
