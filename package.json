@@ -1,6 +1,6 @@
 {
   "name": "xtal-in",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "Web component that emits events with unique, typed names from common input elements",
   "main": "src/v0/xtal-in.js",
   "repository": "https://github.com/bahrus/xtal-in",
