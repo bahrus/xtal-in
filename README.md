@@ -62,34 +62,33 @@ For a very large application, avoiding collisions between two events that happen
 
 If the name of the custom element, add-event-listener, seems too long, or clashes with someone else's custom element with the same name, then you can rename it locally.  The same applies to all the web components defined in this package, so the following discussion is more general than just for add-event-listener.
 
-In your head tag, make sure there is an import tag explictly for the custom element, and add attributes like so:
+In your head tag, add some attributes like so:
 
 ```html
-<script type="module" src="path/to/my/add-event-listener.js" data-package="npm.xtal-in" data-was="add-event-listener"   data-is="tl-dr"></script>
+<head data-xtalInAddEventListenerAlias="tl-dr">
 ```
 
 Then you can use tl-dr instead of add-event-listener.
 
-Else If you prefer to import your modules programmatically, but care about performance, you can instead use a [link preload tag](https://www.chromestatus.com/features/5762805915451392) tag.
-
-```html
-<link rel="modulepreload" as="script" href="path/to/my/add-event-listener.js" data-package="npm.xtal-in" data-was="add-event-listener"   data-is="tl-dr">
-```
-
-Else I don't know what to tell you.
-
-The need for so much ceremony, just to specify an alternative tag name, is not ideal.
-
-This is a temporary workaround until:
-
-1)  All modern browsers support import.meta.scriptElement natively or via a polyfill
-2)  No other snags are found using it.
-
-If both conditions above are met, then two of the three attributes can be eliminated, so only a single (tbd) attribute is required, e.g. data-as="tl-dr".
 
 ## Canonical Name
 
 If you want to use this component in a reusable component, which includes html template markup, and which you want to release into the wild, you should refer to the "canonical" name for this component:  "xtal-in-curry," rather than the more contentious add-event-listener.
+
+
+
+## Too soon?
+
+Perhaps you spotted a flaw:
+
+Being that custom elements can load asynchronously, what is to guarantee that the elements inside the event listener won't fire events before the custom element has attached listeners?  Unfortunately, we can't.  To prevent this from happening, we can hide those elements, and then unhide them after the event handler has been added:
+
+```html
+<add-event-listener on="click" dispatch event-name="wtf" bubbles composed></add-event-listener>
+...
+<button hidden  xtal-in-unhide>How did I get here?</button>
+```
+
 
 ## Details, details
 
