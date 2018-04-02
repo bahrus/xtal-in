@@ -1,40 +1,46 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Simple demo</title>
-        <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-        <script type="module" src="../add-event-listener.js"></script>
-        <script type="module" src="../observe-attributes.js"></script>
+
+<head>
+  <title>Simple demo</title>
+  <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  
+  <script async type="module" src="../add-event-listener.js"></script>
+  <script async type="module" src="../observe-attributes.js"></script>
+  <script async src="https://cdn.jsdelivr.net/npm/xtal-fetch@0.0.21/xtal-fetch.js"></script>
 
 
-    </head>
-    <body>
-            <link rel="import" href="../bower_components/vaadin-checkbox/vaadin-checkbox.html">
+</head>
 
-            <div>
-                    <add-event-listener on="click" dispatch event-name="hello" bubbles composed></add-event-listener>
-                    <add-event-listener on="click" if-matches="#test1" dispatch event-name="test1" bubbles composed></add-event-listener>
-                    <button>Click to dispatch custom event</button>
-                    <button id="test1">Matching Test</button>
-                    
-                    
-                </div>
-                <div>
-                  <div>Observe console.log to see what happens when you toggle the vaadin-checkbox</div>
-                  <observe-attributes dispatch event-name="checkChange" bubbles composed filter='["checked"]'>
-                    <vaadin-checkbox></vaadin-checkbox>
-                  </observe-attributes>
-                </div>
-                <script>
-                  document.body.addEventListener('hello', e =>{
-                    alert('received hello message');
-                  })
-                  document.body.addEventListener('test1', e=>{
-                    alert('received test1 message');
-                  })
-                  document.body.addEventListener('checkChange', e=>{
-                    console.log(e);
-                  })
-                </script>
-    </body>
+<body>
+  <link rel="import" href="../bower_components/vaadin-checkbox/vaadin-checkbox.html">
+
+  <div>
+    <!-- <add-event-listener on="click" dispatch event-name="hello" bubbles composed></add-event-listener>
+    <add-event-listener on="click" if-matches="#test1" dispatch event-name="test1" bubbles composed></add-event-listener> -->
+    <xtal-in-curry on="result-changed" if-matches="xtal-fetch" event-name="mytest" cascade-down></xtal-in-curry>>
+    <button>Click to dispatch custom event</button>
+    <button id="test1">Matching Test</button>
+    <xtal-fetch fetch href="directory.json" as="json"></xtal-fetch>
+    <div mytest-props="test">I am here</div>
+  </div>
+  <div>
+    <div>Observe console.log to see what happens when you toggle the vaadin-checkbox</div>
+    <observe-attributes dispatch event-name="checkChange" bubbles composed filter='["checked"]'>
+      <vaadin-checkbox></vaadin-checkbox>
+    </observe-attributes>
+  </div>
+  <script>
+    document.body.addEventListener('hello', e => {
+      alert('received hello message');
+    })
+    document.body.addEventListener('test1', e => {
+      alert('received test1 message');
+    })
+    document.body.addEventListener('checkChange', e => {
+      console.log(e);
+    })
+  </script>
+</body>
+
 </html>

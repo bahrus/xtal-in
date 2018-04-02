@@ -8,7 +8,37 @@ const composed = 'composed';
 const dispatch = 'dispatch';
 const detail = 'detail';
 const event_name = 'event-name';
+const debounce_duration = 'debounce-duration';
+const zoom_in = 'zoom-in';
+const zoom_out = 'zoom-out';
+// Credit David Walsh (https://davidwalsh.name/javascript-debounce-function)
+// Returns a function, that, as long as it continues to be invoked, will not
+// be triggered. The function will be called after it stops being called for
+// N milliseconds. If `immediate` is passed, trigger the function on the
+// leading edge, instead of the trailing.
+function debounce(func, wait, immediate) {
+    var timeout;
+    return function executedFunction() {
+        var context = this;
+        var args = arguments;
+        var later = function () {
+            timeout = null;
+            if (!immediate)
+                func.apply(context, args);
+        };
+        var callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow)
+            func.apply(context, args);
+    };
+}
+;
 class XtalCustomEvent extends HTMLElement {
+    constructor() {
+        super(...arguments);
+        this._debounceDuration = 0;
+    }
     get bubbles() {
         return this._bubbles;
     }
@@ -47,13 +77,61 @@ class XtalCustomEvent extends HTMLElement {
     }
     set detail(val) {
         this._detail = val;
+        this._zoomedDetail = this.zoom(this._detail);
         this.onPropsChange();
+    }
+    get debounceDuration() {
+        return this._debounceDuration;
+    }
+    set debounceDuration(val) {
+        this.setAttribute(debounce_duration, val.toString());
     }
     get eventName() {
         return this.getAttribute(event_name);
     }
     set eventName(val) {
         this.setAttribute(event_name, val);
+    }
+    get zoomIn() {
+        return this.getAttribute(zoom_in);
+    }
+    set zoomIn(val) {
+        this.setAttribute(zoom_in, val);
+    }
+    get zoomOut() {
+        return this.getAttribute(zoom_out);
+    }
+    set zoomOut(val) {
+        this.setAttribute(zoom_out, val);
+    }
+    zoomInObject(obj) {
+        if (!this.zoomIn)
+            return obj;
+        let returnObj = obj;
+        const split = this.zoomIn.split('.');
+        for (let i = 0, ii = split.length; i < ii; i++) {
+            const selector = split[i];
+            returnObj = returnObj[selector];
+            if (!returnObj)
+                return null;
+        }
+        return returnObj;
+    }
+    zoomOutObject(obj) {
+        if (!this.zoomOut)
+            return obj;
+        let returnObj = obj;
+        this.zoomOut.split('.').forEach(token => {
+            returnObj = {
+                token: returnObj
+            };
+        });
+        return returnObj;
+    }
+    zoom(obj) {
+        if (obj === null)
+            return obj;
+        return this.zoomInObject(this.zoomOutObject(obj));
     }
     get value() {
         return this._value;
@@ -72,11 +150,16 @@ class XtalCustomEvent extends HTMLElement {
     onPropsChange() {
         if (!this._dispatch || !this._detail || (!this.eventName))
             return;
-        this.emitEvent();
+        if (this._debounceFunction) {
+            this._debounceFunction();
+        }
+        else {
+            this.emitEvent();
+        }
     }
     emitEvent() {
         const newEvent = new CustomEvent(this.eventName, {
-            detail: this.detail,
+            detail: this._zoomedDetail,
             bubbles: this.bubbles,
             composed: this.composed
         });
@@ -89,7 +172,7 @@ class XtalCustomEvent extends HTMLElement {
     //     this._isSubClass = val;
     // }
     static get observedAttributes() {
-        return [bubbles, composed, dispatch, detail, event_name];
+        return [bubbles, composed, dispatch, detail, event_name, debounce_duration, zoom_in, zoom_out];
     }
     _upgradeProperties(props) {
         props.forEach(prop => {
@@ -115,7 +198,15 @@ class XtalCustomEvent extends HTMLElement {
                 this['_' + this.snakeToCamel(name)] = newValue !== null;
                 break;
             case detail:
-                this._detail = JSON.parse(newValue);
+                this._detail = this.zoom(JSON.parse(newValue));
+                break;
+            case debounce_duration:
+                this._debounceDuration = parseFloat(newValue);
+                if (this._debounceDuration > 0) {
+                    this._debounceFunction = debounce(() => {
+                        this.emitEvent();
+                    }, this._debounceDuration);
+                }
                 break;
         }
         this.onPropsChange();
@@ -300,8 +391,9 @@ const stopPropagation = 'stop-propagation';
 const on = 'on';
 const ifMatches = 'if-matches';
 const valueProps = 'value-props';
-const defaultTagName1 = 'add-event-listener';
-const canonicalTagName2 = 'xtal-in-curry';
+const cascadeDown = 'cascade-down';
+const defaultTagName_addEventListener = 'add-event-listener';
+const canonicalTagName_XtalInCurry = 'xtal-in-curry';
 class AddEventListener extends XtalCustomEvent {
     constructor() {
         super();
@@ -336,8 +428,14 @@ class AddEventListener extends XtalCustomEvent {
     set valueProps(val) {
         this.setAttribute(valueProps, val.toString());
     }
+    get cascadeDown() {
+        return this.getAttribute(cascadeDown);
+    }
+    set cascadeDown(val) {
+        this.setAttribute(cascadeDown, val);
+    }
     static get observedAttributes() {
-        return super.observedAttributes.concat([stopPropagation, on, ifMatches, valueProps]);
+        return super.observedAttributes.concat([stopPropagation, on, ifMatches, valueProps, cascadeDown]);
     }
     attributeChangedCallback(name, oldValue, newValue) {
         super.attributeChangedCallback(name, oldValue, newValue);
@@ -363,13 +461,16 @@ class AddEventListener extends XtalCustomEvent {
             case ifMatches:
                 this._ifMatches = newValue;
                 break;
+            case cascadeDown:
+                this.propagateDown();
+                break;
             case on:
                 this._on = newValue;
                 const parent = this.parentElement;
-                let bundledAllHandlers = parent[canonicalTagName2];
+                let bundledAllHandlers = parent[canonicalTagName_XtalInCurry];
                 if (this._on) {
                     if (!bundledAllHandlers) {
-                        bundledAllHandlers = parent[canonicalTagName2] = {};
+                        bundledAllHandlers = parent[canonicalTagName_XtalInCurry] = {};
                     }
                     let bundledHandlersForSingleEventType = bundledAllHandlers[this._on];
                     if (!bundledHandlersForSingleEventType) {
@@ -387,6 +488,23 @@ class AddEventListener extends XtalCustomEvent {
         }
     }
     //_boundHandleEvent;
+    modifyEvent(e, subscriber) {
+        if (subscriber.stopPropagation)
+            e.stopPropagation();
+    }
+    propagateDown() {
+        if (!this.eventName)
+            return;
+        const targetAttr = this.eventName + '-props';
+        const targets = this.parentElement.querySelectorAll('[' + targetAttr + ']');
+        for (let i = 0, ii = targets.length; i < ii; i++) {
+            const target = targets[i];
+            const props = target.getAttribute(targetAttr).split(',');
+            props.forEach(prop => {
+                target[prop] = this.value;
+            });
+        }
+    }
     handleEvent(e) {
         const bundledHandlers = this['xtal-in-curry'][e.type];
         bundledHandlers.forEach(subscriber => {
@@ -395,14 +513,12 @@ class AddEventListener extends XtalCustomEvent {
                 if (!target.matches(subscriber._ifMatches))
                     return;
             }
-            if (subscriber.stopPropagation)
-                e.stopPropagation();
-            const eventObj = {
-                context: subscriber.detail
-            };
-            let values;
+            subscriber.modifyEvent(e, subscriber);
             if (this._valueProps) {
+                let values;
+                let hasMultipleValues = false;
                 if (Array.isArray(this._valueProps)) {
+                    hasMultipleValues = true;
                     values = {};
                     this._valueProps.forEach(prop => {
                         values[prop] = target[prop];
@@ -411,10 +527,28 @@ class AddEventListener extends XtalCustomEvent {
                 else {
                     values = target[this._valueProps];
                 }
-                eventObj.values = values;
+                const eventObj = {};
+                if (subscriber._zoomedDetail) {
+                    eventObj.context = subscriber._zoomedDetail;
+                }
+                if (values) {
+                    if (hasMultipleValues) {
+                        eventObj.values = values;
+                    }
+                    else {
+                        eventObj.value = values;
+                    }
+                }
+                subscriber.detail = eventObj;
             }
-            subscriber.detail = eventObj;
-            subscriber.setValue(values);
+            else {
+                subscriber.detail = subscriber._zoomedDetail;
+            }
+            const value = Object.assign({}, subscriber.detail);
+            subscriber.setValue(value);
+            if (subscriber.cascadeDown) {
+                subscriber.propagateDown();
+            }
         });
         //this.dispatch = true;
         // window.requestAnimationFrame(() => {
@@ -430,7 +564,7 @@ class AddEventListener extends XtalCustomEvent {
     }
     disconnect() {
         const parent = this.parentElement;
-        let bundledAllHandlers = parent[canonicalTagName2];
+        let bundledAllHandlers = parent[canonicalTagName_XtalInCurry];
         const bundledHandlersForSingleEventType = bundledAllHandlers[this._on];
         this.removeElement(bundledHandlersForSingleEventType, this);
         if (bundledHandlersForSingleEventType.length === 0) {
@@ -446,10 +580,12 @@ class AddEventListener extends XtalCustomEvent {
         this.disconnect();
     }
 }
-registerTagName(defaultTagName1, AddEventListener);
-class XtalInCurry extends AddEventListener {
+if (!customElements.get(canonicalTagName_XtalInCurry)) {
+    registerTagName(defaultTagName_addEventListener, AddEventListener);
+    class XtalInCurry extends AddEventListener {
+    }
+    customElements.define(canonicalTagName_XtalInCurry, XtalInCurry);
 }
-customElements.define(canonicalTagName2, XtalInCurry);
 //# sourceMappingURL=add-event-listener.js.map
 })();  
     

@@ -39,7 +39,17 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
         }
     }
 
-
+    _cascadeDown: boolean;
+    get cascadeDown(){
+        return this._cascadeDown;
+    }
+    set cascadeDown(val){
+        if(val){
+            this.setAttribute(cascadeDown, '');
+        }else{
+            this.removeAttribute(cascadeDown);
+        }
+    }
 
     _on: string;
     get on() {
@@ -64,12 +74,7 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
         this.setAttribute(valueProps, val.toString());
     }
 
-    get cascadeDown(){
-        return this.getAttribute(cascadeDown);
-    }
-    set cascadeDown(val){
-        this.setAttribute(cascadeDown, val);
-    }
+
 
     static get observedAttributes() {
         return super.observedAttributes.concat([stopPropagation, on, ifMatches, valueProps, cascadeDown]);
@@ -98,7 +103,11 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
                 this._ifMatches = newValue;
                 break;
             case cascadeDown:
-                this.propagateDown();
+                this._cascadeDown = newValue !== null;
+                if(this._cascadeDown){
+                    this.propagateDown();
+                }
+                
                 break;
             case on:
                 this._on = newValue;
@@ -169,19 +178,22 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
                     values = target[this._valueProps];
                 }
                 const eventObj = {} as IEventPacket;
-                if(subscriber._zoomedDetail){
-                    eventObj.context = subscriber._zoomedDetail
-                }
+                // if(subscriber._zoomedDetail){
+                //     eventObj.context = subscriber._zoomedDetail
+                // }
                 if(values){
                     if(hasMultipleValues){
                         eventObj.values = values;
                     }else{
                         eventObj.value = values;
                     }
+                    eventObj.context = e['detail'];
+                }else{
+                    Object.assign(eventObj, e['detail']);
                 }
                 subscriber.detail = eventObj;
             }else{
-                subscriber.detail = subscriber._zoomedDetail;
+                subscriber.detail = Object.assign({}, e['detail']);
             }
             const value = Object.assign({}, subscriber.detail);
             subscriber.setValue(value);

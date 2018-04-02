@@ -251,9 +251,11 @@ function registerTagNameForRealz(defaultTagName: string, cls: any){
 }
 export function registerTagName(defaultTagName: string, cls: any){
     if (document.readyState !== "loading") {
+        console.log('finished loading');
        registerTagNameForRealz(defaultTagName, cls);
     } else {
         document.addEventListener("DOMContentLoaded", e => {
+            console.log('finished loading');
             registerTagNameForRealz(defaultTagName, cls);
         });
     }
