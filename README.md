@@ -81,14 +81,15 @@ If you want to use this component in a reusable component, which includes html t
 
 Perhaps you spotted a flaw:
 
-Being that custom elements can load asynchronously, what is to guarantee that the elements inside the event listener won't fire events before the custom element has attached listeners?  Unfortunately, we can't.  To prevent this from happening, we can hide those elements, and then unhide them after the event handler has been added:
+Being that custom elements can load asynchronously, what is to guarantee that the elements inside the event listener won't fire events *before* the custom element has attached listeners?  Unfortunately, we can't.  To prevent this from happening, we can disable those elements, and then re-enable them after the event handler has been added:
 
 ```html
 <add-event-listener on="click" dispatch event-name="wtf" bubbles composed></add-event-listener>
 ...
-<button hidden  xtal-in-unhide>How did I get here?</button>
+<button disabled  xtal-in-able>How did I get here?</button>
 ```
 
+If multiple event listeners are added, then give them all the same group.  Until all elements with the same group have been attached, the disabled attribute / property won't be removed. [TODO]
 
 ## Details, details
 

@@ -5,9 +5,9 @@
   <title>Simple demo</title>
   <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   
-  <script async type="module" src="../add-event-listener.js"></script>
-  <script async type="module" src="../observe-attributes.js"></script>
-  <script async src="https://cdn.jsdelivr.net/npm/xtal-fetch@0.0.21/xtal-fetch.js"></script>
+  <script type="module" src="../add-event-listener.js"></script>
+  <script type="module" src="../observe-attributes.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/xtal-fetch@0.0.23/xtal-fetch-base.js"></script>
 
 
 </head>
@@ -18,10 +18,10 @@
   <div>
     <!-- <add-event-listener on="click" dispatch event-name="hello" bubbles composed></add-event-listener>
     <add-event-listener on="click" if-matches="#test1" dispatch event-name="test1" bubbles composed></add-event-listener> -->
-    <xtal-in-curry on="result-changed" if-matches="xtal-fetch" event-name="mytest" cascade-down></xtal-in-curry>>
+    <add-event-listener on="result-changed" if-matches="xtal-fetch-base" event-name="mytest" cascade-down></add-event-listener>
     <button>Click to dispatch custom event</button>
     <button id="test1">Matching Test</button>
-    <xtal-fetch fetch href="directory.json" as="json"></xtal-fetch>
+    <xtal-fetch-base fetch href="directory.json" as="json" disabled xtal-in-able></xtal-fetch-base>
     <div mytest-props="test">I am here</div>
   </div>
   <div>

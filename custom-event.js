@@ -180,11 +180,8 @@ export class XtalCustomEvent extends HTMLElement {
             }
         });
     }
-    snakeToCamel(s) {
-        return s.replace(/(\-\w)/g, function (m) { return m[1].toUpperCase(); });
-    }
     connectedCallback() {
-        this._upgradeProperties(XtalCustomEvent.observedAttributes.map(attrib => this.snakeToCamel(attrib)));
+        this._upgradeProperties(XtalCustomEvent.observedAttributes.map(attrib => snakeToCamel(attrib)));
     }
     attributeChangedCallback(name, oldValue, newValue) {
         switch (name) {
@@ -192,7 +189,7 @@ export class XtalCustomEvent extends HTMLElement {
             case bubbles:
             case dispatch:
             case composed:
-                this['_' + this.snakeToCamel(name)] = newValue !== null;
+                this['_' + snakeToCamel(name)] = newValue !== null;
                 break;
             case detail:
                 this._detail = this.zoom(JSON.parse(newValue));
@@ -209,34 +206,20 @@ export class XtalCustomEvent extends HTMLElement {
         this.onPropsChange();
     }
 }
-function registerTagNameForRealz(defaultTagName, cls) {
-    // const scTagName = 'npm_xtal_in_' +  defaultTagName.split('-').join('_');
-    let tagName = defaultTagName;
-    // const linkRef = self[scTagName] as HTMLLinkElement;
-    // if(linkRef && linkRef.dataset.as){
-    //     tagName = linkRef.dataset.as;
-    // }
-    const was = document.head.querySelector(`[data-was="${defaultTagName}"][data-package="npm.xtal-in"]`);
-    if (was) {
-        const is = was.dataset.is;
-        if (is)
-            tagName = is;
-    }
-    if (customElements.get(tagName))
+export function registerTagName(defaultTagName, cls) {
+    const h = document.head;
+    if (!h)
         return;
+    const scTagName = 'xtalIn' + snakeToCamel(defaultTagName) + 'Alias';
+    let tagName = defaultTagName;
+    const alias = h.dataset[scTagName];
+    if (alias) {
+        tagName = alias;
+    }
     customElements.define(tagName, cls);
 }
-export function registerTagName(defaultTagName, cls) {
-    if (document.readyState !== "loading") {
-        console.log('finished loading');
-        registerTagNameForRealz(defaultTagName, cls);
-    }
-    else {
-        document.addEventListener("DOMContentLoaded", e => {
-            console.log('finished loading');
-            registerTagNameForRealz(defaultTagName, cls);
-        });
-    }
+export function snakeToCamel(s) {
+    return s.replace(/(\-\w)/g, function (m) { return m[1].toUpperCase(); });
 }
 if (!customElements.get(canonicalTagName)) {
     registerTagName(defaultTagName, XtalCustomEvent);

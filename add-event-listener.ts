@@ -79,6 +79,9 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
     static get observedAttributes() {
         return super.observedAttributes.concat([stopPropagation, on, ifMatches, valueProps, cascadeDown]);
     }
+    qsa(css, from?: HTMLElement | Document) : HTMLElement[]{
+        return  [].slice.call((from ? from : this).querySelectorAll(css));
+    }
     attributeChangedCallback(name, oldValue, newValue: string) {
         super.attributeChangedCallback(name, oldValue, newValue);
         switch (name) {
@@ -127,8 +130,11 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
                     bundledHandlersForSingleEventType.push(this);
                     //this._boundHandleEvent = this.handleEvent.bind(this);
                     //this.parentElement.addEventListener(this._on, this._boundHandleEvent);
-
-
+                    this.qsa('[xtal-in-able]', parent).forEach((el : HTMLElement) =>{
+                        el.removeAttribute('disabled');
+                    })
+                    
+                    
                 } else {
                     this.disconnect();
                 }
