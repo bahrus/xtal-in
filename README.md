@@ -154,6 +154,17 @@ If multiple properties need to be set to the value of the event, list them with 
 
 If trying to set property innerHTML or nodeValue, html tags will first be stripped.
 
+## Media Queries
+
+Another event generator is the match-media component.  This is similar to Polymer's iron-media-query, but with no legacy dependencies.
+
+Canonical name:  xtal-in-media.
+
+```html
+<div>[[mediaDoesMatch]]</div>
+<match-media media-query-string="(max-height: 300px)" value="{{mediaDoesMatch}}"></match-media>
+```
+
 ## Install the Polymer-CLI
 
 First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. Then run `polymer serve` to serve your element locally.
