@@ -3,6 +3,7 @@ const canonicalTagName = 'xtal-in-detail';
 const bubbles = 'bubbles';
 const composed = 'composed';
 const dispatch = 'dispatch';
+const disabled = 'disabled';
 const detail = 'detail';
 const event_name = 'event-name';
 const debounce_duration = 'debounce-duration';
@@ -56,6 +57,17 @@ export class XtalCustomEvent extends HTMLElement {
         }
         else {
             this.removeAttribute(composed);
+        }
+    }
+    get disabled() {
+        return this._disabled || this.hasAttribute(disabled);
+    }
+    set disabled(val) {
+        if (val) {
+            this.setAttribute(disabled, '');
+        }
+        else {
+            this.removeAttribute(disabled);
         }
     }
     get dispatch() {
@@ -145,7 +157,7 @@ export class XtalCustomEvent extends HTMLElement {
         this.dispatchEvent(newEvent);
     }
     onPropsChange() {
-        if (!this._dispatch || !this._detail || (!this.eventName))
+        if (!this._dispatch || !this._detail || (!this.eventName) || this.disabled)
             return;
         if (this._debounceFunction) {
             this._debounceFunction();
@@ -189,6 +201,7 @@ export class XtalCustomEvent extends HTMLElement {
             case bubbles:
             case dispatch:
             case composed:
+            case disabled:
                 this['_' + snakeToCamel(name)] = newValue !== null;
                 break;
             case detail:

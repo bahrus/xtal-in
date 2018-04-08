@@ -106,6 +106,7 @@ export class AddEventListener extends XtalCustomEvent {
                     this.qsa('[xtal-in-able]', parent).forEach((el) => {
                         el.removeAttribute('disabled');
                     });
+                    //TODO:  if document not parsed, then do above again after parsed.
                 }
                 else {
                     this.disconnect();

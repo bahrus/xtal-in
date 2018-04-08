@@ -18,6 +18,7 @@ const newLines = [];
 processFile('custom-event.js', newLines);
 processFile('observe-attributes.js', newLines);
 processFile('observe-children.js', newLines);
+processFile('match-media.js', newLines);
 processFile('add-event-listener.js', newLines);
 let newContent = `
 //@ts-check

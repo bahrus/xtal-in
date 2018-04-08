@@ -132,7 +132,8 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
                     //this.parentElement.addEventListener(this._on, this._boundHandleEvent);
                     this.qsa('[xtal-in-able]', parent).forEach((el : HTMLElement) =>{
                         el.removeAttribute('disabled');
-                    })
+                    });
+                    //TODO:  if document not parsed, then do above again after parsed.
                     
                     
                 } else {

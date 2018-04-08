@@ -2,6 +2,7 @@
 export interface IXtalInDetailProperties {
     bubbles: boolean,
     composed: boolean,
+    disabled: boolean,
     dispatch: boolean,
     detail: any,
     eventName: string,
@@ -14,6 +15,7 @@ const canonicalTagName = 'xtal-in-detail';
 const bubbles = 'bubbles';
 const composed = 'composed';
 const dispatch = 'dispatch';
+const disabled = 'disabled';
 const detail = 'detail';
 const event_name = 'event-name';
 const debounce_duration = 'debounce-duration';
@@ -70,6 +72,17 @@ export class XtalCustomEvent extends HTMLElement implements IXtalInDetailPropert
             this.setAttribute(composed, '');
         } else {
             this.removeAttribute(composed);
+        }
+    }
+    _disabled: boolean;
+    get disabled(){
+        return this._disabled || this.hasAttribute(disabled);
+    }
+    set disabled(val){
+        if(val){
+            this.setAttribute(disabled, '');
+        }else{
+            this.removeAttribute(disabled);
         }
     }
     _dispatch: boolean;
@@ -165,7 +178,7 @@ export class XtalCustomEvent extends HTMLElement implements IXtalInDetailPropert
 
 
     onPropsChange() {
-        if (!this._dispatch || !this._detail || (!this.eventName)) return;
+        if (!this._dispatch || !this._detail || (!this.eventName) || this.disabled) return;
         if(this._debounceFunction){
             this._debounceFunction();
         }else{
@@ -215,6 +228,7 @@ export class XtalCustomEvent extends HTMLElement implements IXtalInDetailPropert
             case bubbles:
             case dispatch:
             case composed:
+            case disabled:
                 this['_' + snakeToCamel(name)] = newValue !== null;
                 break;
             case detail:
