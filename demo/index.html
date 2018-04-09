@@ -42,11 +42,11 @@
                 </div>
                 <div>
                   <div>Observe console.log to see what happens when you toggle the vaadin-checkbox</div>
-                  <observe-children dispatch event-name="childrenChanged" bubbles composed>
-                  <observe-attributes dispatch event-name="checkChange" bubbles composed filter='["checked"]'>
+                  <observe-children watch-subtree dispatch event-name="childrenChanged" bubbles composed></observe-children>
+                    <observe-attributes dispatch event-name="checkChange" bubbles composed filter='["checked"]'>
                     <vaadin-checkbox></vaadin-checkbox>
                   </observe-attributes>
-                </observe-children>
+                
                 </div>
             </template>
           </dom-bind>
@@ -57,9 +57,13 @@
             })
             document.body.addEventListener('test1', e=>{
               alert('received test1 message');
+
             })
             document.body.addEventListener('checkChange', e=>{
               console.log(e);
+              var newDiv = document.createElement('div');
+              newDiv.innerHTML = "<span>iah</span><ul><li>1</li><li>2</li?</ul>";
+              e.target.parentElement.appendChild(newDiv);
             })
             document.body.addEventListener('childrenChanged', e=>{
               console.log(e)

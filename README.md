@@ -138,21 +138,6 @@ This package utilizes ES6 modules.  Each custom element is a separate module, wh
 
 However, for browsers that don't support ES6 modules, an alternative file, xtal-in.js, bundles all the modules together.  It can be referenced using a classic script tag.  No require.js or any other polyfill is required.
 
-## And now for something completely different
-
-Most of the functionality described here involves events flowing upwards.  However, those of us who like two-way binding emulation, but who don't necessarily want to buy into a view library, can take advantage of one additional property of add-event-listener:  cascade-down.
-
-
-```html
-<add-event-listener on="click" dispatch event-name="wtf" bubbles composed cascade-down></add-event-listener>
-...
-
-<my-custom-element wtf-props="myProp"><my-custom-element>
-```
-
-If multiple properties need to be set to the value of the event, list them with a comma delimiter.
-
-If trying to set property innerHTML or nodeValue, html tags will first be stripped.
 
 ## Media Queries
 

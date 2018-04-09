@@ -194,8 +194,8 @@ export class XtalCustomEvent extends HTMLElement implements IXtalInDetailPropert
             composed: this.composed
         } as CustomEventInit);
         this.dispatchEvent(newEvent);
-        if(!this._isSubClass){
-            this.setValue(newEvent.detail);
+        if(!this._isSubClass && newEvent.detail){
+            this.setValue(newEvent.detail.value);
         }
     }
 

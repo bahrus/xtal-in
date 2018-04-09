@@ -173,8 +173,8 @@ export class XtalCustomEvent extends HTMLElement {
             composed: this.composed
         });
         this.dispatchEvent(newEvent);
-        if (!this._isSubClass) {
-            this.setValue(newEvent.detail);
+        if (!this._isSubClass && newEvent.detail) {
+            this.setValue(newEvent.detail.value);
         }
     }
     // set isSubClass(val){
