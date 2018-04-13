@@ -3,7 +3,8 @@ const stopPropagation = 'stop-propagation';
 const on = 'on';
 const ifMatches = 'if-matches';
 const valueProps = 'value-props';
-const cascadeDown = 'cascade-down';
+const disabledGroup = 'disabled-attribute-matcher';
+//const cascadeDown = 'cascade-down';
 const defaultTagName_addEventListener = 'add-event-listener';
 const canonicalTagName_XtalInCurry = 'xtal-in-curry';
 export class AddEventListener extends XtalCustomEvent {
@@ -20,17 +21,6 @@ export class AddEventListener extends XtalCustomEvent {
         }
         else {
             this.removeAttribute(stopPropagation);
-        }
-    }
-    get cascadeDown() {
-        return this._cascadeDown;
-    }
-    set cascadeDown(val) {
-        if (val) {
-            this.setAttribute(cascadeDown, '');
-        }
-        else {
-            this.removeAttribute(cascadeDown);
         }
     }
     get on() {
@@ -52,7 +42,7 @@ export class AddEventListener extends XtalCustomEvent {
         this.setAttribute(valueProps, val.toString());
     }
     static get observedAttributes() {
-        return super.observedAttributes.concat([stopPropagation, on, ifMatches, valueProps, cascadeDown]);
+        return super.observedAttributes.concat([stopPropagation, on, ifMatches, valueProps]);
     }
     qsa(css, from) {
         return [].slice.call((from ? from : this).querySelectorAll(css));
@@ -81,12 +71,12 @@ export class AddEventListener extends XtalCustomEvent {
             case ifMatches:
                 this._ifMatches = newValue;
                 break;
-            case cascadeDown:
-                this._cascadeDown = newValue !== null;
-                if (this._cascadeDown) {
-                    this.propagateDown();
-                }
-                break;
+            // case cascadeDown:
+            //     this._cascadeDown = newValue !== null;
+            //     if(this._cascadeDown){
+            //         this.propagateDown();
+            //     }
+            //     break;
             case on:
                 this._on = newValue;
                 const parent = this.parentElement;
@@ -119,19 +109,18 @@ export class AddEventListener extends XtalCustomEvent {
         if (subscriber.stopPropagation)
             e.stopPropagation();
     }
-    propagateDown() {
-        if (!this.eventName)
-            return;
-        const targetAttr = this.eventName + '-props';
-        const targets = this.parentElement.querySelectorAll('[' + targetAttr + ']');
-        for (let i = 0, ii = targets.length; i < ii; i++) {
-            const target = targets[i];
-            const props = target.getAttribute(targetAttr).split(',');
-            props.forEach(prop => {
-                target[prop] = this.value;
-            });
-        }
-    }
+    // propagateDown(){
+    //     if(!this.eventName) return;
+    //     const targetAttr = this.eventName + '-props';
+    //     const targets = this.parentElement.querySelectorAll('[' + targetAttr + ']');
+    //     for(let i = 0, ii = targets.length; i < ii; i++){ 
+    //         const target = targets[i];
+    //         const props = target.getAttribute(targetAttr).split(',');
+    //         props.forEach(prop =>{
+    //             target[prop] = this.value;
+    //         })
+    //     }
+    // }
     handleEvent(e) {
         const bundledHandlers = this['xtal-in-curry'][e.type];
         bundledHandlers.forEach(subscriber => {
@@ -177,9 +166,9 @@ export class AddEventListener extends XtalCustomEvent {
             }
             const value = Object.assign({}, subscriber.detail);
             subscriber.setValue(value);
-            if (subscriber.cascadeDown) {
-                subscriber.propagateDown();
-            }
+            // if(subscriber.cascadeDown){
+            //     subscriber.propagateDown();
+            // }
         });
         //this.dispatch = true;
         // window.requestAnimationFrame(() => {

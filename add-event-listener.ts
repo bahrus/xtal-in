@@ -5,6 +5,7 @@ export interface IAddEventListener extends IXtalInDetailProperties {
     stopPropagation: boolean,
     on: string,
     ifMatches: string,
+    disabledAttributeMatcher: string,
 }
 export interface IEventPacket {
     context: any,
@@ -16,7 +17,8 @@ const stopPropagation = 'stop-propagation';
 const on = 'on';
 const ifMatches = 'if-matches';
 const valueProps = 'value-props';
-const cascadeDown = 'cascade-down';
+const disabledAttributeMatcher = 'disabled-attribute-matcher';
+//const cascadeDown = 'cascade-down';
 
 const defaultTagName_addEventListener = 'add-event-listener';
 const canonicalTagName_XtalInCurry = 'xtal-in-curry';
@@ -39,15 +41,15 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
         }
     }
 
-    _cascadeDown: boolean;
-    get cascadeDown(){
-        return this._cascadeDown;
+    _disabledAttributeMatcher ;
+    get disabledAttributeMatcher(){
+        return this._disabledAttributeMatcher;
     }
-    set cascadeDown(val){
+    set(val){
         if(val){
-            this.setAttribute(cascadeDown, '');
+            this.setAttribute(disabledAttributeMatcher, '');
         }else{
-            this.removeAttribute(cascadeDown);
+            this.removeAttribute(disabledAttributeMatcher);
         }
     }
 
@@ -77,7 +79,7 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
 
 
     static get observedAttributes() {
-        return super.observedAttributes.concat([stopPropagation, on, ifMatches, valueProps, cascadeDown]);
+        return super.observedAttributes.concat([stopPropagation, on, ifMatches, valueProps, disabledAttributeMatcher]);
     }
     qsa(css, from?: HTMLElement | Document) : HTMLElement[]{
         return  [].slice.call((from ? from : this).querySelectorAll(css));
@@ -105,13 +107,9 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
             case ifMatches:
                 this._ifMatches = newValue;
                 break;
-            case cascadeDown:
-                this._cascadeDown = newValue !== null;
-                if(this._cascadeDown){
-                    this.propagateDown();
-                }
-                
-                break;
+            case disabledAttributeMatcher:
+                this._disabledAttributeMatcher = newValue !== null;
+                bba
             case on:
                 this._on = newValue;
                 const parent = this.parentElement;
@@ -150,18 +148,18 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
 
     }
 
-    propagateDown(){
-        if(!this.eventName) return;
-        const targetAttr = this.eventName + '-props';
-        const targets = this.parentElement.querySelectorAll('[' + targetAttr + ']');
-        for(let i = 0, ii = targets.length; i < ii; i++){ 
-            const target = targets[i];
-            const props = target.getAttribute(targetAttr).split(',');
-            props.forEach(prop =>{
-                target[prop] = this.value;
-            })
-        }
-    }
+    // propagateDown(){
+    //     if(!this.eventName) return;
+    //     const targetAttr = this.eventName + '-props';
+    //     const targets = this.parentElement.querySelectorAll('[' + targetAttr + ']');
+    //     for(let i = 0, ii = targets.length; i < ii; i++){ 
+    //         const target = targets[i];
+    //         const props = target.getAttribute(targetAttr).split(',');
+    //         props.forEach(prop =>{
+    //             target[prop] = this.value;
+    //         })
+    //     }
+    // }
 
     handleEvent(e: Event) {
         const bundledHandlers = this['xtal-in-curry'][e.type] as AddEventListener[];
@@ -204,9 +202,9 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
             }
             const value = Object.assign({}, subscriber.detail);
             subscriber.setValue(value);
-            if(subscriber.cascadeDown){
-                subscriber.propagateDown();
-            }
+            // if(subscriber.cascadeDown){
+            //     subscriber.propagateDown();
+            // }
         })
 
         //this.dispatch = true;

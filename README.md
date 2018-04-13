@@ -2,7 +2,7 @@
 
 # \<xtal-in-*\>
 
-\<xtal-in-*\> is a dependency-free suite of components that generates events with semantically meaningful, and even unique, discoverable event names.
+\<xtal-in-*\> is a dependency-free suite of components that generates events with semantically meaningful, and even unique, discoverable event names.  To be fair, the components all extend a core component, so there is interdependency between the components within this suite.
 
 The -in- in xtal-in- refers to an "input channel" -- which can be a clickable dom element, or more abstract things like attributes, child mutations, etc.
 
@@ -14,6 +14,8 @@ In the [groundbreaking blog post "Custom Elements That Work Anywhere"](http://ro
 Adding an event listener to an element, whose sole purpose is to bubble the event up with a different name, is a rather insulting task for the powerful and sophisticated JavaScript language to handle.  JavaScript should only be bothered with important stuff, like reinventing the browser in an immutable abstraction layer that can time travel recursively.
 
 If a developer is looking at markup, and sees an event handler, and, heart beating in anticipation of what spectacular logic will be found there, finds that it is just reposting the event with a different name, can we fault the developer for asking if this is living, and making a mid-life career move?
+
+[As we'll see, there is an additional subtle subtext / goal to the components we are defining here --  today, in order to add event handling logic / binding, one generally needs to buy into some framework that has that functionality built into its templating syntax.  That can be a great developer experience.  But these solutions don't seem conducive to situations where raw HTML gets added into the document outside the perview of the framework.  What if we want to provide glue between web components that don't buy into one template syntax?] 
 
 This packages contains multiple elements that enable declaratively currying, as well as generating, events easily.
 
@@ -58,11 +60,13 @@ You can also specify a test on the element spawning the event, using the if-matc
 
 For a very large application, avoiding collisions between two events that happen to adopt the same name is a little difficult, if sticking purely to declarative markup, especially compared to the power of typed supersets of JavaScript.  To solve this, you could utilize the xtal-import-export web component defined within the [webcomponents.org/element/bahrus/xtal-method](xtal-method) package.  You could import a global guid constant and export that symbol as your event-name property.
 
+ 
+
 ## Renaming
 
 If the name of the custom element, add-event-listener, seems too long, or clashes with someone else's custom element with the same name, then you can rename it locally.  The same applies to all the web components defined in this package, so the following discussion is more general than just for add-event-listener.
 
-In your head tag, add some attributes like so:
+In your head tag, add an attribute like so:
 
 ```html
 <head data-xtalInAddEventListenerAlias="tl-dr">
@@ -73,23 +77,42 @@ Then you can use tl-dr instead of add-event-listener.
 
 ## Canonical Name
 
-If you want to use this component in a reusable component, which includes html template markup, and which you want to release into the wild, you should refer to the "canonical" name for this component:  "xtal-in-curry," rather than the more contentious add-event-listener.
-
+If you want to use this component in a reusable component, which includes html template markup, and which you want to release into the wild, you should refer to the "canonical" name for this component:  "xtal-in-curry," rather than the more contentious add-event-listener or your favorite alias.
 
 
 ## Too soon?
 
-Perhaps you spotted a flaw:
+I suspect every grand scheme has a weak point, a place where things don't [quite line up in an orderly fashion](https://www.math.hmc.edu/funfacts/ffiles/20005.7.shtml).  We now dive into the complex, messy part, and get over it as quickly as possible.
 
-Being that custom elements can load asynchronously, what is to guarantee that the elements inside the event listener won't fire events *before* the custom element has attached listeners?  Unfortunately, we can't.  To prevent this from happening, we can disable those elements, and then re-enable them after the event handler has been added:
+Perhaps you spotted the flaw:
+
+*Being that custom elements can load asynchronously, what is to guarantee that the elements inside the event listener won't fire events *before* the custom element has attached listeners?*
+
+Unfortunately, we can't.  To prevent this from happening, we can disable those elements, and then re-enable them after the event handler has been added:
 
 ```html
+
 <add-event-listener on="click" dispatch event-name="wtf" bubbles composed></add-event-listener>
 ...
-<button disabled  xtal-in-able>How did I get here?</button>
+<button disabled>How did I get here?</button> <!-- add-event-listener will leave this disabled -->
 ```
 
-If multiple event listeners are added, then give them all the same group.  Until all elements with the same group have been attached, the disabled attribute / property won't be removed. [TODO]
+The markup above is too simplistic -- what if you want some components not to be disabled right away?  add-event-listener won't be so presumptuous to assume that every disabled element needs enabling.  Instead, it looks for disabled attributes set to some prescribed value:
+
+```html
+<add-event-listener on="click" dispatch event-name="wtf" bubbles composed disabled-attribute-matcher="foundYourself"></add-event-listener>
+...
+<button disabled="foundYourself">How did I get here?</button> <!-- add-event-listener will remove this disabled attribute after attaching to its parent -->
+```
+
+If multiple event listeners are added, you can give them all the same disabled-attribute-match value. If you do, until all elements with the same value have been attached, the disabled attribute / property won't be removed. [TODO]
+
+*But what if the html child DOM gets added into the document **after** the event handler has been added?*
+
+The disabled attribute trick should only be used for your initial html, not for html that may be loaded later based on an AJAX request (for example).  I think it should be possible for applications to treat initial HTML markup differently from HTML updates.  But even for initial HTML, there could be an issue with slow streaming connections / divices, where the HTML may get added in pieces.
+
+If add-event-listener reenables matching disabled elements before the document parsing is in a ready state, and stops there, it could inadvertently leave some disabled elements disabled.  To prevent this, add-event-listener will also search for, and  re-enable, matching disabled elements once more after the  [DOMContentLoaded](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) event fires. 
+
 
 ## Details, details
 
