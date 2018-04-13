@@ -82,7 +82,7 @@ If you want to use this component in a reusable component, which includes html t
 
 ## Too soon?
 
-I suspect every grand scheme has a weak point, a place where things don't [quite line up in an orderly fashion](https://www.math.hmc.edu/funfacts/ffiles/20005.7.shtml).  We now dive into the complex, messy part, and get over it as quickly as possible.
+I suspect every grand scheme has a weak point, a place where things don't [quite line up in an orderly fashion](https://www.math.hmc.edu/funfacts/ffiles/20005.7.shtml).  We now dive into the complex, messy part, and get it over with as quickly as possible.
 
 Perhaps you spotted the flaw:
 
@@ -109,7 +109,7 @@ If multiple event listeners are added, you can give them all the same disabled-a
 
 *But what if the html child DOM gets added into the document **after** the event handler has been added?*
 
-The disabled attribute trick should only be used for your initial html, not for html that may be loaded later based on an AJAX request (for example).  I think it should be possible for applications to treat initial HTML markup differently from HTML updates.  But even for initial HTML, there could be an issue with slow streaming connections / divices, where the HTML may get added in pieces.
+The disabled attribute trick should only be used for your initial html, not for html that may be loaded later based on an AJAX request (for example).  I think it should be possible for applications to treat initial HTML markup differently from HTML updates.  But even for initial HTML, there could be an issue with slow streaming connections / devices, where the HTML may get added in pieces.
 
 If add-event-listener reenables matching disabled elements before the document parsing is in a ready state, and stops there, it could inadvertently leave some disabled elements disabled.  To prevent this, add-event-listener will also search for, and  re-enable, matching disabled elements once more after the  [DOMContentLoaded](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) event fires. 
 
