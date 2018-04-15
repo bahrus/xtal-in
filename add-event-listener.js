@@ -3,7 +3,7 @@ const stopPropagation = 'stop-propagation';
 const on = 'on';
 const ifMatches = 'if-matches';
 const valueProps = 'value-props';
-const disabledGroup = 'disabled-attribute-matcher';
+const disabledAttributeMatcher = 'disabled-attribute-matcher';
 //const cascadeDown = 'cascade-down';
 const defaultTagName_addEventListener = 'add-event-listener';
 const canonicalTagName_XtalInCurry = 'xtal-in-curry';
@@ -13,7 +13,7 @@ export class AddEventListener extends XtalCustomEvent {
         this._isSubClass = true;
     }
     get stopPropagation() {
-        return this._stopPropagation;
+        return this._stopPropagation || this.hasAttribute(stopPropagation);
     }
     set stopPropagation(val) {
         if (val) {
@@ -23,6 +23,17 @@ export class AddEventListener extends XtalCustomEvent {
             this.removeAttribute(stopPropagation);
         }
     }
+    get disabledAttributeMatcher() {
+        return this._disabledAttributeMatcher || this.getAttribute(disabledAttributeMatcher);
+    }
+    set(val) {
+        if (val) {
+            this.setAttribute(disabledAttributeMatcher, '');
+        }
+        else {
+            this.removeAttribute(disabledAttributeMatcher);
+        }
+    }
     get on() {
         return this._on;
     }
@@ -30,19 +41,19 @@ export class AddEventListener extends XtalCustomEvent {
         this.setAttribute(on, val);
     }
     get ifMatches() {
-        return this._ifMatches;
+        return this._ifMatches || this.getAttribute(ifMatches);
     }
     set ifMatches(val) {
         this.setAttribute(ifMatches, val);
     }
     get valueProps() {
-        return this._valueProps;
+        return this._valueProps || this.getAttribute(valueProps);
     }
     set valueProps(val) {
         this.setAttribute(valueProps, val.toString());
     }
     static get observedAttributes() {
-        return super.observedAttributes.concat([stopPropagation, on, ifMatches, valueProps]);
+        return super.observedAttributes.concat([stopPropagation, on, ifMatches, valueProps, disabledAttributeMatcher]);
     }
     qsa(css, from) {
         return [].slice.call((from ? from : this).querySelectorAll(css));
@@ -57,26 +68,22 @@ export class AddEventListener extends XtalCustomEvent {
                 this._stopPropagation = newValue !== null;
                 break;
             case valueProps:
-                if (newValue === null) {
-                    this._valueProps = null;
-                }
-                else {
-                    if (newValue.startsWith('[')) {
-                        this._valueProps = JSON.parse(newValue);
-                    }
-                    else {
-                        this._valueProps = newValue;
-                    }
-                }
+                this._valueProps = newValue;
+            // if (newValue === null) {
+            //     this._valueProps = null;
+            // } else {
+            //     if (newValue.startsWith('[')) {
+            //         this._valueProps = JSON.parse(newValue);
+            //     } else {
+            //         this._valueProps = newValue;
+            //     }
+            // }
             case ifMatches:
                 this._ifMatches = newValue;
                 break;
-            // case cascadeDown:
-            //     this._cascadeDown = newValue !== null;
-            //     if(this._cascadeDown){
-            //         this.propagateDown();
-            //     }
-            //     break;
+            case disabledAttributeMatcher:
+                this._disabledAttributeMatcher = newValue !== null;
+            //bba
             case on:
                 this._on = newValue;
                 const parent = this.parentElement;
@@ -93,10 +100,16 @@ export class AddEventListener extends XtalCustomEvent {
                     bundledHandlersForSingleEventType.push(this);
                     //this._boundHandleEvent = this.handleEvent.bind(this);
                     //this.parentElement.addEventListener(this._on, this._boundHandleEvent);
-                    this.qsa('[xtal-in-able]', parent).forEach((el) => {
-                        el.removeAttribute('disabled');
-                    });
-                    //TODO:  if document not parsed, then do above again after parsed.
+                    // this.qsa('[xtal-in-able]', parent).forEach((el : HTMLElement) =>{
+                    //     el.removeAttribute('disabled');
+                    // });
+                    this.enableElements();
+                    if (document.readyState === "loading") {
+                        document.addEventListener("DOMContentLoaded", e => {
+                            this.enableElements();
+                            ;
+                        });
+                    }
                 }
                 else {
                     this.disconnect();
@@ -104,39 +117,38 @@ export class AddEventListener extends XtalCustomEvent {
                 break;
         }
     }
-    //_boundHandleEvent;
+    enableElements() {
+        if (this.disabledAttributeMatcher) {
+            debugger;
+            this.setAttribute('attached', '');
+            if (this.qsa(`:not(attached)[${this.disabledAttributeMatcher}]`, this.parentElement).length > 0)
+                return;
+            this.qsa(`[disabled="${this.disabledAttributeMatcher}"]`).forEach((el) => {
+                el.removeAttribute('disabled');
+            });
+        }
+    }
     modifyEvent(e, subscriber) {
         if (subscriber.stopPropagation)
             e.stopPropagation();
     }
-    // propagateDown(){
-    //     if(!this.eventName) return;
-    //     const targetAttr = this.eventName + '-props';
-    //     const targets = this.parentElement.querySelectorAll('[' + targetAttr + ']');
-    //     for(let i = 0, ii = targets.length; i < ii; i++){ 
-    //         const target = targets[i];
-    //         const props = target.getAttribute(targetAttr).split(',');
-    //         props.forEach(prop =>{
-    //             target[prop] = this.value;
-    //         })
-    //     }
-    // }
     handleEvent(e) {
         const bundledHandlers = this['xtal-in-curry'][e.type];
         bundledHandlers.forEach(subscriber => {
             const target = e.target;
-            if (subscriber._ifMatches) {
-                if (!target.matches(subscriber._ifMatches))
+            if (subscriber.ifMatches) {
+                if (!target.matches(subscriber.ifMatches))
                     return;
             }
             subscriber.modifyEvent(e, subscriber);
-            if (this._valueProps) {
+            if (this.valueProps) {
                 let values;
                 let hasMultipleValues = false;
-                if (Array.isArray(this._valueProps)) {
+                if (this.valueProps.indexOf(',') > -1) {
                     hasMultipleValues = true;
                     values = {};
-                    this._valueProps.forEach(prop => {
+                    const parsedValueProps = this.valueProps.split(',');
+                    parsedValueProps.forEach(prop => {
                         values[prop] = target[prop];
                     });
                 }

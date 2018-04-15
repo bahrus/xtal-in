@@ -15,7 +15,7 @@ Adding an event listener to an element, whose sole purpose is to bubble the even
 
 If a developer is looking at markup, and sees an event handler, and, heart beating in anticipation of what spectacular logic will be found there, finds that it is just reposting the event with a different name, can we fault the developer for asking if this is living, and making a mid-life career move?
 
-[As we'll see, there is an additional subtle subtext / goal to the components we are defining here --  today, in order to add event handling logic / binding, one generally needs to buy into some framework that has that functionality built into its templating syntax.  That can be a great developer experience.  But these solutions don't seem conducive to situations where raw HTML gets added into the document outside the perview of the framework.  What if we want to provide glue between web components that don't buy into one template syntax?] 
+[As we'll see, there is an additional subtle subtext / goal to the components we are defining here --  today, in order to add event handling logic / binding, one generally needs to buy into some framework-ish template syntax.  That can be a great developer experience.  But these solutions don't seem conducive to situations where raw HTML gets added into the document outside the perview of the framework.  What if we want to provide glue between web components that don't buy into one template syntax?] 
 
 This packages contains multiple elements that enable declaratively currying, as well as generating, events easily.
 
@@ -105,7 +105,7 @@ The markup above is too simplistic -- what if you want some components not to be
 <button disabled="foundYourself">How did I get here?</button> <!-- add-event-listener will remove this disabled attribute after attaching to its parent -->
 ```
 
-If multiple event listeners are added, you can give them all the same disabled-attribute-match value. If you do, until all elements with the same value have been attached, the disabled attribute / property won't be removed. [TODO]
+If multiple event listeners are added, you can give them all the same disabled-attribute-match value. If you do, then until all elements with the same value have been attached, the disabled attribute / property won't be removed.
 
 *But what if the html child DOM gets added into the document **after** the event handler has been added?*
 
@@ -172,6 +172,25 @@ Canonical name:  xtal-in-media.
 <div>[[mediaDoesMatch]]</div>
 <match-media media-query-string="(max-height: 300px)" value="{{mediaDoesMatch}}"></match-media>
 ```
+
+## Two-way binding (TODO)
+
+The syntax:
+
+```html
+    <div>
+        <xtal-binder
+            on="fetch-complete"
+            if-matches="[href='api/peopleList']"
+            pass-to="#displayPeople{items:detail.value}"
+        ></xtal-binder>
+        ...
+        <xtal-fetch fetch href="api/peopleList"></xtal-fetch>
+        ...
+        <iron-list id="displayPeople"></iron-list>
+    </div>
+```
+
 
 ## Install the Polymer-CLI
 

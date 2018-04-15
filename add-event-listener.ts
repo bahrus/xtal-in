@@ -1,7 +1,7 @@
 import { XtalCustomEvent, IXtalInDetailProperties, registerTagName } from './custom-event.js';
 export interface IAddEventListener extends IXtalInDetailProperties {
     //detailFn: (detail: any, ref: IAddEventListener) => any;
-    valueProps: string | string[];
+    valueProps: string;
     stopPropagation: boolean,
     on: string,
     ifMatches: string,
@@ -31,7 +31,7 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
 
     _stopPropagation: boolean;
     get stopPropagation() {
-        return this._stopPropagation;
+        return this._stopPropagation || this.hasAttribute(stopPropagation);
     }
     set stopPropagation(val) {
         if (val) {
@@ -43,7 +43,7 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
 
     _disabledAttributeMatcher ;
     get disabledAttributeMatcher(){
-        return this._disabledAttributeMatcher;
+        return this._disabledAttributeMatcher || this.getAttribute(disabledAttributeMatcher);
     }
     set(val){
         if(val){
@@ -63,16 +63,16 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
 
     _ifMatches: string;
     get ifMatches() {
-        return this._ifMatches;
+        return this._ifMatches || this.getAttribute(ifMatches);
     }
     set ifMatches(val: string) {
         this.setAttribute(ifMatches, val);
     }
-    _valueProps: string | string[];
+    _valueProps: string;
     get valueProps() {
-        return this._valueProps;
+        return this._valueProps || this.getAttribute(valueProps);
     }
-    set valueProps(val: string | string[]) {
+    set valueProps(val) {
         this.setAttribute(valueProps, val.toString());
     }
 
@@ -95,21 +95,22 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
                 break;
 
             case valueProps:
-                if (newValue === null) {
-                    this._valueProps = null;
-                } else {
-                    if (newValue.startsWith('[')) {
-                        this._valueProps = JSON.parse(newValue);
-                    } else {
-                        this._valueProps = newValue;
-                    }
-                }
+                this._valueProps = newValue;
+                // if (newValue === null) {
+                //     this._valueProps = null;
+                // } else {
+                //     if (newValue.startsWith('[')) {
+                //         this._valueProps = JSON.parse(newValue);
+                //     } else {
+                //         this._valueProps = newValue;
+                //     }
+                // }
             case ifMatches:
                 this._ifMatches = newValue;
                 break;
             case disabledAttributeMatcher:
                 this._disabledAttributeMatcher = newValue !== null;
-                bba
+                //bba
             case on:
                 this._on = newValue;
                 const parent = this.parentElement;
@@ -128,10 +129,16 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
                     bundledHandlersForSingleEventType.push(this);
                     //this._boundHandleEvent = this.handleEvent.bind(this);
                     //this.parentElement.addEventListener(this._on, this._boundHandleEvent);
-                    this.qsa('[xtal-in-able]', parent).forEach((el : HTMLElement) =>{
-                        el.removeAttribute('disabled');
-                    });
-                    //TODO:  if document not parsed, then do above again after parsed.
+                    // this.qsa('[xtal-in-able]', parent).forEach((el : HTMLElement) =>{
+                    //     el.removeAttribute('disabled');
+                    // });
+                    this.enableElements();
+                    if (document.readyState === "loading") {
+                        document.addEventListener("DOMContentLoaded", e => {
+                            this.enableElements();;
+                        });
+                    } 
+
                     
                     
                 } else {
@@ -142,41 +149,39 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
 
         }
     }
-    //_boundHandleEvent;
+    enableElements(){
+        if(this.disabledAttributeMatcher){
+            debugger;
+            this.setAttribute('attached', '');
+            if(this.qsa(`:not(attached)[${this.disabledAttributeMatcher}]`, this.parentElement).length > 0) return;
+            this.qsa(`[disabled="${this.disabledAttributeMatcher}"]`).forEach((el:HTMLElement) =>{
+                el.removeAttribute('disabled');
+            })
+        }
+    }
     modifyEvent(e: Event, subscriber: AddEventListener){
         if (subscriber.stopPropagation) e.stopPropagation();
 
     }
 
-    // propagateDown(){
-    //     if(!this.eventName) return;
-    //     const targetAttr = this.eventName + '-props';
-    //     const targets = this.parentElement.querySelectorAll('[' + targetAttr + ']');
-    //     for(let i = 0, ii = targets.length; i < ii; i++){ 
-    //         const target = targets[i];
-    //         const props = target.getAttribute(targetAttr).split(',');
-    //         props.forEach(prop =>{
-    //             target[prop] = this.value;
-    //         })
-    //     }
-    // }
+
 
     handleEvent(e: Event) {
         const bundledHandlers = this['xtal-in-curry'][e.type] as AddEventListener[];
         bundledHandlers.forEach(subscriber => {
             const target = e.target;
-            if (subscriber._ifMatches) {
-                if (!(target as HTMLElement).matches(subscriber._ifMatches)) return;
+            if (subscriber.ifMatches) {
+                if (!(target as HTMLElement).matches(subscriber.ifMatches)) return;
             }
             subscriber.modifyEvent(e, subscriber);
-            if (this._valueProps) {
-
+            if (this.valueProps) {
                 let values;
                 let hasMultipleValues = false;
-                if (Array.isArray(this._valueProps)) {
+                if (this.valueProps.indexOf(',') > -1) {
                     hasMultipleValues = true;
                     values = {};
-                    this._valueProps.forEach(prop => {
+                    const parsedValueProps = this.valueProps.split(',');
+                    parsedValueProps.forEach(prop => {
                         values[prop] = target[prop]
                     });
                 } else {
