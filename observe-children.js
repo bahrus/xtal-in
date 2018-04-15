@@ -38,24 +38,14 @@ class ObserveChildren extends XtalCustomEvent {
             this._observer.disconnect();
     }
     addMutationObserver() {
-        // debugger;
-        var config = { childList: true, subtree: this._watchSubtree };
+        const config = { childList: true, subtree: this._watchSubtree };
         this._observer = new MutationObserver((mutationsList) => {
-            // mutationsList.forEach(mutation =>{
-            //     this.detail = {
-            //         mutation
-            //     }
-            // })
             this.detail = mutationsList;
             this._mutationCount++;
             this.setValue(this._mutationCount, null);
         });
-        // this.detail = {
-        //     status: 'observing'
-        // }
         this.setValue(this._mutationCount, null);
         this._observer.observe(this.parentElement, config);
-        //this.detail.
     }
     connectedCallback() {
         super.connectedCallback();

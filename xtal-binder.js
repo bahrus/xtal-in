@@ -23,6 +23,20 @@ class XtalBinder extends AddEventListener {
     connectedCallback() {
         super.connectedCallback();
         this._upgradeProperties(['passTo']);
+        const config = { childList: true, subtree: true };
+        this._observer = new MutationObserver((mutationsList) => {
+            mutationsList.forEach(mutation => {
+                mutation.addedNodes.forEach(node => {
+                    this.cascade(this._lastEvent, node);
+                });
+            });
+        });
+        this._observer.observe(this.parentElement, config);
+    }
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        if (this._observer)
+            this._observer.disconnect();
     }
     parsePassTo() {
         const iPosOfOpenBrace = this._passTo.lastIndexOf('{');
@@ -40,14 +54,14 @@ class XtalBinder extends AddEventListener {
     setValue(val, e) {
         super.setValue(val, e);
         this._lastEvent = e;
-        this.cascade(e);
+        this.cascade(e, this.parentElement);
     }
     // handleEvent(e: Event) {
     // }
-    cascade(e) {
+    cascade(e, refElement) {
         if (!this._cssSelector || !this._propMapper)
             return;
-        this.qsa(this._cssSelector, this.parentElement).forEach(target => {
+        this.qsa(this._cssSelector, refElement).forEach(target => {
             for (var key in this._propMapper) {
                 const pathSelector = this._propMapper[key];
                 let context = e;
