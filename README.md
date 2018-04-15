@@ -88,7 +88,7 @@ Perhaps you spotted the flaw:
 
 *Being that custom elements can load asynchronously, what is to guarantee that the elements inside the event listener won't fire events *before* the custom element has attached listeners?*
 
-Unfortunately, we can't.  To prevent this from happening, we can disable those elements, and then re-enable them after the event handler has been added:
+Unfortunately, we can't.  To prevent this from happening, we can disable those elements, and then enable them after the event handler has been added:
 
 ```html
 
@@ -111,7 +111,7 @@ If multiple event listeners are added, you can give them all the same disabled-a
 
 The disabled attribute trick should only be used for your initial html, not for html that may be loaded later based on an AJAX request (for example).  I think it should be possible for applications to treat initial HTML markup differently from HTML updates.  But even for initial HTML, there could be an issue with slow streaming connections / devices, where the HTML may get added in pieces.
 
-If add-event-listener reenables matching disabled elements before the document parsing is in a ready state, and stops there, it could inadvertently leave some disabled elements disabled.  To prevent this, add-event-listener will also search for, and  re-enable, matching disabled elements once more after the  [DOMContentLoaded](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) event fires. 
+If add-event-listener enables matching disabled elements before the document parsing is in a ready state, and stops there, it could inadvertently leave some disabled elements disabled, despite our best intentions.  To prevent this, add-event-listener will also search for, and  enable, matching disabled elements once more after the  [DOMContentLoaded](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) event fires. 
 
 
 ## Details, details
