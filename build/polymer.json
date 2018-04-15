@@ -4,6 +4,7 @@
   "sources": [
     "custom-event.js",
     "add-event-listener.js",
+    "xtal-binder.js",
     "observe-attributes.js",
     "observe-children.js",
     "xtal-in.js",
@@ -32,5 +33,6 @@
     "rules": [
       "polymer-2"
     ]
-  }
+  },
+  "moduleResolution": "none"
 }
