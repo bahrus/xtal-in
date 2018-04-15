@@ -163,7 +163,7 @@ export class XtalCustomEvent extends HTMLElement implements IXtalInDetailPropert
     get value(){
         return this._value;
     }
-    setValue(val){
+    setValue(val, e: Event){
         this._value = val;
         const newEvent = new CustomEvent('value-changed', {
             detail: {
@@ -195,7 +195,7 @@ export class XtalCustomEvent extends HTMLElement implements IXtalInDetailPropert
         } as CustomEventInit);
         this.dispatchEvent(newEvent);
         if(!this._isSubClass && newEvent.detail){
-            this.setValue(newEvent.detail.value);
+            this.setValue(newEvent.detail.value, newEvent);
         }
     }
 

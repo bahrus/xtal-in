@@ -59,7 +59,6 @@ export class AddEventListener extends XtalCustomEvent {
         return [].slice.call((from ? from : this).querySelectorAll(css));
     }
     attributeChangedCallback(name, oldValue, newValue) {
-        super.attributeChangedCallback(name, oldValue, newValue);
         switch (name) {
             // case href:
             //     this._href = newValue;
@@ -116,14 +115,14 @@ export class AddEventListener extends XtalCustomEvent {
                 }
                 break;
         }
+        super.attributeChangedCallback(name, oldValue, newValue);
     }
     enableElements() {
         if (this.disabledAttributeMatcher) {
-            debugger;
             this.setAttribute('attached', '');
             if (this.qsa(`:not(attached)[${this.disabledAttributeMatcher}]`, this.parentElement).length > 0)
                 return;
-            this.qsa(`[disabled="${this.disabledAttributeMatcher}"]`).forEach((el) => {
+            this.qsa(`[disabled="${this.disabledAttributeMatcher}"]`, this.parentElement).forEach((el) => {
                 el.removeAttribute('disabled');
             });
         }
@@ -177,7 +176,7 @@ export class AddEventListener extends XtalCustomEvent {
                 subscriber.detail = Object.assign({}, e['detail']);
             }
             const value = Object.assign({}, subscriber.detail);
-            subscriber.setValue(value);
+            subscriber.setValue(value, e);
             // if(subscriber.cascadeDown){
             //     subscriber.propagateDown();
             // }

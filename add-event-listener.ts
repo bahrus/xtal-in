@@ -85,7 +85,7 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
         return  [].slice.call((from ? from : this).querySelectorAll(css));
     }
     attributeChangedCallback(name, oldValue, newValue: string) {
-        super.attributeChangedCallback(name, oldValue, newValue);
+       
         switch (name) {
             // case href:
             //     this._href = newValue;
@@ -148,13 +148,13 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
 
 
         }
+        super.attributeChangedCallback(name, oldValue, newValue);
     }
     enableElements(){
         if(this.disabledAttributeMatcher){
-            debugger;
             this.setAttribute('attached', '');
             if(this.qsa(`:not(attached)[${this.disabledAttributeMatcher}]`, this.parentElement).length > 0) return;
-            this.qsa(`[disabled="${this.disabledAttributeMatcher}"]`).forEach((el:HTMLElement) =>{
+            this.qsa(`[disabled="${this.disabledAttributeMatcher}"]`, this.parentElement).forEach((el:HTMLElement) =>{
                 el.removeAttribute('disabled');
             })
         }
@@ -206,7 +206,7 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
                 subscriber.detail = Object.assign({}, e['detail']);
             }
             const value = Object.assign({}, subscriber.detail);
-            subscriber.setValue(value);
+            subscriber.setValue(value, e);
             // if(subscriber.cascadeDown){
             //     subscriber.propagateDown();
             // }

@@ -49,12 +49,12 @@ class ObserveChildren extends XtalCustomEvent{
             // })
             this.detail = mutationsList;
             this._mutationCount++;
-            this.setValue(this._mutationCount);
+            this.setValue(this._mutationCount, null);
         });
         // this.detail = {
         //     status: 'observing'
         // }
-        this.setValue(this._mutationCount);
+        this.setValue(this._mutationCount, null);
         this._observer.observe(this.parentElement, config);
         //this.detail.
     }

@@ -145,7 +145,7 @@ export class XtalCustomEvent extends HTMLElement {
     get value() {
         return this._value;
     }
-    setValue(val) {
+    setValue(val, e) {
         this._value = val;
         const newEvent = new CustomEvent('value-changed', {
             detail: {
@@ -174,7 +174,7 @@ export class XtalCustomEvent extends HTMLElement {
         });
         this.dispatchEvent(newEvent);
         if (!this._isSubClass && newEvent.detail) {
-            this.setValue(newEvent.detail.value);
+            this.setValue(newEvent.detail.value, newEvent);
         }
     }
     // set isSubClass(val){

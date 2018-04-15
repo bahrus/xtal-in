@@ -44,7 +44,7 @@ class ObserveAttributes extends XtalCustomEvent implements IObserveMutationsProp
                 }
             })
             const attribs = this.filter ? this.getValues(this.filter) : this._child.attributes;
-            this.setValue(attribs);
+            this.setValue(attribs,null);
         });
         this._observer.observe(this._child, config);
 
