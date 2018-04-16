@@ -173,9 +173,21 @@ Canonical name:  xtal-in-media.
 <match-media media-query-string="(max-height: 300px)" value="{{mediaDoesMatch}}"></match-media>
 ```
 
-## Two-way binding (TODO)
+## Two-way binding
 
-The syntax:
+In my view, Polymer's two-way binding support is, like other libraries that support two-way binding, a great time saver for both development, and maintenance.  For me it is eye candy.  
+
+However, despite all its goodness, there are some tradeoffs / disadvantages to it:
+
+1)  To create a "scope" within which the binding occurs, you need to either define a new component, or utilize the dom-bind helper component (or some alternative equivalent).
+2)  It requires the underlying Polymer library, which clocks in around 10kb.
+3)  It requires a little bit of HTML magic pixie dust, strategically adding attributes with {{}} or [[]] throughout the markup.  What those magic squirly thingies actually do remains a mystery.
+4)  If working with an application which takes a different approaching to templating (like Preact, for example), introducing an additional templating syntax on top of that may be too much for some developers to stomach.
+
+
+We've already defined (and described) some small, dependency free web components here (custom-event, add-event-listener), useful in their own right, as we've seen.  For a measely 750B extra, we provide an additional custom element, xtal-binder, that provides an alternative binding mechanism that, while not as powerful as Polymer's (and performance comparisons have not been made), may be viewed as solutions to the 4 issues raised above. 
+
+As the syntax below demonstrates, the way this binding works, is to concentrate all the "contrived" markup all within the xtal-binder tag, leaving the markup of the actual web components alone.  And note that the "scope" of this binding is a simple div tag (and it can be any tag under the sun).
 
 ```html
     <div>
@@ -191,6 +203,22 @@ The syntax:
     </div>
 ```
 
+Compare this to Polymer:
+
+```html
+<template is="dom-bind">
+    <div>
+        ...
+        <xtal-fetch fetch href="api/peopleList" result="{{peopleList}}"</xtal-fetch>
+        ...
+        <iron-list items="[[peopleList]]"></iron-list>
+    </div>
+</template>
+```
+
+While the Polymer syntax is slightly more compact, that should be weighed against the tradeoffs listed above.  
+
+Note:  In the xtal-binder example, the if-matches attribute was optional in this case, and is only needed if there are multiple components within the div the emit events with different meanings but with the same name.
 
 ## Install the Polymer-CLI
 
