@@ -39,17 +39,27 @@ class XtalBinder extends AddEventListener {
             this._observer.disconnect();
     }
     parsePassTo() {
-        const iPosOfOpenBrace = this._passTo.lastIndexOf('{');
-        if (iPosOfOpenBrace < 0)
-            return;
-        this._cssSelector = this._passTo.substr(0, iPosOfOpenBrace);
-        const propMapperString = this._passTo.substring(iPosOfOpenBrace + 1, this._passTo.length - 1);
-        const tokens = propMapperString.split(';');
-        this._propMapper = {};
-        tokens.forEach(token => {
-            const nameValuePair = token.split(':');
-            this._propMapper[nameValuePair[0]] = nameValuePair[1].split('.');
+        // const iPosOfOpenBrace = this._passTo.lastIndexOf('{');
+        // if(iPosOfOpenBrace < 0) return;
+        this.cssKeyMappers = [];
+        const endsWithBrace = this._passTo.endsWith('}');
+        const adjustedPassTo = this._passTo + (endsWithBrace ? ';' : '');
+        const splitPassTo = adjustedPassTo.split('};');
+        splitPassTo.forEach(passTo => {
+            const splitPassTo2 = passTo.split('{');
+            const tokens = splitPassTo2[1].split(';');
+            const propMapper = {};
+            tokens.forEach(token => {
+                const nameValuePair = token.split(':');
+                propMapper[nameValuePair[0]] = nameValuePair[1].split('.');
+            });
+            this.cssKeyMappers.push({
+                cssSelector: splitPassTo2[0],
+                propMapper: propMapper
+            });
         });
+        // this._cssSelector = this._passTo.substr(0, iPosOfOpenBrace);
+        // const propMapperString = this._passTo.substring(iPosOfOpenBrace + 1, this._passTo.length - 1);
     }
     setValue(val, e) {
         super.setValue(val, e);
@@ -59,18 +69,20 @@ class XtalBinder extends AddEventListener {
     // handleEvent(e: Event) {
     // }
     cascade(e, refElement) {
-        if (!this._cssSelector || !this._propMapper)
+        if (!this.cssKeyMappers)
             return;
-        this.qsa(this._cssSelector, refElement).forEach(target => {
-            for (var key in this._propMapper) {
-                const pathSelector = this._propMapper[key];
-                let context = e;
-                pathSelector.forEach(path => {
-                    if (context)
-                        context = context[path];
-                });
-                target[key] = context;
-            }
+        this.cssKeyMappers.forEach(cssKeyMapper => {
+            this.qsa(cssKeyMapper.cssSelector, refElement).forEach(target => {
+                for (var key in cssKeyMapper.propMapper) {
+                    const pathSelector = cssKeyMapper.propMapper[key];
+                    let context = e;
+                    pathSelector.forEach(path => {
+                        if (context)
+                            context = context[path];
+                    });
+                    target[key] = context;
+                }
+            });
         });
     }
 }

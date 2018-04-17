@@ -3,6 +3,11 @@ import {AddEventListener, IAddEventListener} from './add-event-listener.js';
 export interface IXtalBinderProperties extends IAddEventListener{
     passTo: string
 }
+
+interface ICssKeyMapper{
+    cssSelector: string;
+    propMapper: {[key: string]: string[]}
+}
 const passTo = 'pass-to';
 class XtalBinder extends AddEventListener implements IXtalBinderProperties{
     static get is(){return 'xtal-binder';}
@@ -45,19 +50,32 @@ class XtalBinder extends AddEventListener implements IXtalBinderProperties{
         super.disconnectedCallback();
         if(this._observer) this._observer.disconnect();
     }
-    _cssSelector: string;
-    _propMapper: {[key: string]: string[]}
+    // _cssSelector: string;
+    // _propMapper: {[key: string]: string[]}
+    cssKeyMappers : ICssKeyMapper[];
     parsePassTo(){
-        const iPosOfOpenBrace = this._passTo.lastIndexOf('{');
-        if(iPosOfOpenBrace < 0) return;
-        this._cssSelector = this._passTo.substr(0, iPosOfOpenBrace);
-        const propMapperString = this._passTo.substring(iPosOfOpenBrace + 1, this._passTo.length - 1);
-        const tokens = propMapperString.split(';');
-        this._propMapper = {};
-        tokens.forEach(token =>{
-            const nameValuePair = token.split(':');
-            this._propMapper[nameValuePair[0]] = nameValuePair[1].split('.');
+        // const iPosOfOpenBrace = this._passTo.lastIndexOf('{');
+        // if(iPosOfOpenBrace < 0) return;
+        this.cssKeyMappers = [];
+        const endsWithBrace = this._passTo.endsWith('}');
+        const adjustedPassTo = this._passTo + (endsWithBrace ? ';' : '');
+        const splitPassTo = adjustedPassTo.split('};');
+        splitPassTo.forEach(passTo =>{
+            const splitPassTo2 = passTo.split('{');
+            const tokens = splitPassTo2[1].split(';');
+            const propMapper = {};
+            tokens.forEach(token =>{
+                const nameValuePair = token.split(':');
+                propMapper[nameValuePair[0]] = nameValuePair[1].split('.');
+            })
+            this.cssKeyMappers.push({
+                cssSelector: splitPassTo2[0],
+                propMapper: propMapper
+            });
         })
+        // this._cssSelector = this._passTo.substr(0, iPosOfOpenBrace);
+        // const propMapperString = this._passTo.substring(iPosOfOpenBrace + 1, this._passTo.length - 1);
+        
     }
     _lastEvent: any;
     setValue(val, e: Event){
@@ -69,17 +87,20 @@ class XtalBinder extends AddEventListener implements IXtalBinderProperties{
 
     // }
     cascade(e: Event, refElement: HTMLElement){
-        if(!this._cssSelector || !this._propMapper) return;
-        this.qsa(this._cssSelector, refElement).forEach(target =>{
-            for(var key in this._propMapper){
-                const pathSelector = this._propMapper[key];
-                let context = e;
-                pathSelector.forEach(path =>{
-                    if(context) context = context[path];
-                });
-                target[key] = context;
-            }
-        });
+        if(!this.cssKeyMappers) return;
+        this.cssKeyMappers.forEach(cssKeyMapper =>{
+            this.qsa(cssKeyMapper.cssSelector, refElement).forEach(target =>{
+                for(var key in cssKeyMapper.propMapper){
+                    const pathSelector = cssKeyMapper.propMapper[key];
+                    let context = e;
+                    pathSelector.forEach(path =>{
+                        if(context) context = context[path];
+                    });
+                    target[key] = context;
+                }
+            });
+        })
+        
 
     }
 
