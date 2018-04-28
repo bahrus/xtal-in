@@ -15,11 +15,11 @@ Adding an event listener to an element, whose sole purpose is to bubble the even
 
 If a developer is looking at markup, and sees an event handler, and, heart beating in anticipation of what spectacular logic will be found there, finds that it is just reposting the event with a different name, can we fault the developer for asking if this is living, and making a mid-life career move?
 
-[As we'll see, there is an additional subtle subtext / goal to the components we are defining here --  today, in order to add event handling logic / binding, one generally needs to buy into some framework-ish template syntax.  That can be a great developer experience.  But these solutions don't seem conducive to situations where raw HTML gets added into the document outside the perview of the framework.  What if we want to provide glue between web components that don't buy into one template syntax?] 
+[As we'll see, there is an additional subtle subtext / goal to the components we are defining here --  today, in order to add event handling logic / binding, one generally needs to buy into some framework-ish template syntax.  That can be a great developer experience.  But these solutions don't seem conducive to situations where raw HTML gets added into the document outside the purview of the framework.  What if we want to provide glue between web components that don't buy into one template syntax?] 
 
-This packages contains multiple elements that enable declaratively currying, as well as generating, events easily.
+This package contains multiple elements that enable declaratively currying, as well as generating, events easily.
 
-A number of elements, starting with prefix "xtal-in-*" serve as *sources* of events.
+A number of elements, starting with canonical name prefix "xtal-in-*" serve as *sources* of events.
 
 One particular element in this package, *add-event-listener" only listens for events, and bubbles them up with a semantic name.  Let's start diving into this last one in more detail.
 
@@ -214,7 +214,7 @@ Compare this to Polymer:
 
 While the Polymer syntax is slightly more compact, that should be weighed against the tradeoffs listed above.  
 
-It should be noted thaat the same event can be passed to multiple element css selectors / properties, using the semicolon delimiter.
+It should be noted that the same event can be passed to multiple element css selectors / properties, using the semicolon delimiter.
 
 ## Install the Polymer-CLI
 

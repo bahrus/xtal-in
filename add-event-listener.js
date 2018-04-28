@@ -7,6 +7,13 @@ const disabledAttributeMatcher = 'disabled-attribute-matcher';
 //const cascadeDown = 'cascade-down';
 const defaultTagName_addEventListener = 'add-event-listener';
 const canonicalTagName_XtalInCurry = 'xtal-in-curry';
+export function getParent(el) {
+    const parent = el.parentNode;
+    if (parent.nodeType === 11) {
+        return parent['host'];
+    }
+    return parent;
+}
 export class AddEventListener extends XtalCustomEvent {
     constructor() {
         super();
@@ -85,7 +92,7 @@ export class AddEventListener extends XtalCustomEvent {
             //bba
             case on:
                 this._on = newValue;
-                const parent = this.parentElement;
+                const parent = getParent(this);
                 let bundledAllHandlers = parent[canonicalTagName_XtalInCurry];
                 if (this._on) {
                     if (!bundledAllHandlers) {
@@ -94,7 +101,7 @@ export class AddEventListener extends XtalCustomEvent {
                     let bundledHandlersForSingleEventType = bundledAllHandlers[this._on];
                     if (!bundledHandlersForSingleEventType) {
                         bundledHandlersForSingleEventType = bundledAllHandlers[this._on] = [];
-                        this.parentElement.addEventListener(this._on, this.handleEvent);
+                        parent.addEventListener(this._on, this.handleEvent);
                     }
                     bundledHandlersForSingleEventType.push(this);
                     //this._boundHandleEvent = this.handleEvent.bind(this);
@@ -120,9 +127,10 @@ export class AddEventListener extends XtalCustomEvent {
     enableElements() {
         if (this.disabledAttributeMatcher) {
             this.setAttribute('attached', '');
-            if (this.qsa(`:not(attached)[${this.disabledAttributeMatcher}]`, this.parentElement).length > 0)
+            const parent = getParent(this);
+            if (this.qsa(`:not(attached)[${this.disabledAttributeMatcher}]`, parent).length > 0)
                 return;
-            this.qsa(`[disabled="${this.disabledAttributeMatcher}"]`, this.parentElement).forEach((el) => {
+            this.qsa(`[disabled="${this.disabledAttributeMatcher}"]`, parent).forEach((el) => {
                 el.removeAttribute('disabled');
             });
         }
@@ -194,12 +202,12 @@ export class AddEventListener extends XtalCustomEvent {
         }
     }
     disconnect() {
-        const parent = this.parentElement;
+        const parent = getParent(this);
         let bundledAllHandlers = parent[canonicalTagName_XtalInCurry];
         const bundledHandlersForSingleEventType = bundledAllHandlers[this._on];
         this.removeElement(bundledHandlersForSingleEventType, this);
         if (bundledHandlersForSingleEventType.length === 0) {
-            this.parentElement.removeEventListener(this._on, this.handleEvent);
+            parent.removeEventListener(this._on, this.handleEvent);
         }
     }
     connectedCallback() {

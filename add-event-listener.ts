@@ -23,6 +23,14 @@ const disabledAttributeMatcher = 'disabled-attribute-matcher';
 const defaultTagName_addEventListener = 'add-event-listener';
 const canonicalTagName_XtalInCurry = 'xtal-in-curry';
 
+export function getParent(el: HTMLElement){
+    const parent = el.parentNode as HTMLElement;
+    if(parent.nodeType === 11){
+        return parent['host'];
+    }
+    return parent;
+}
+
 export class AddEventListener extends XtalCustomEvent implements IAddEventListener {
     constructor() {
         super();
@@ -113,7 +121,7 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
                 //bba
             case on:
                 this._on = newValue;
-                const parent = this.parentElement;
+                const parent = getParent(this);
                 let bundledAllHandlers = parent[canonicalTagName_XtalInCurry];
                 if (this._on) {
 
@@ -124,7 +132,7 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
                     let bundledHandlersForSingleEventType = bundledAllHandlers[this._on];
                     if (!bundledHandlersForSingleEventType) {
                         bundledHandlersForSingleEventType = bundledAllHandlers[this._on] = [];
-                        this.parentElement.addEventListener(this._on, this.handleEvent);
+                        parent.addEventListener(this._on, this.handleEvent);
                     }
                     bundledHandlersForSingleEventType.push(this);
                     //this._boundHandleEvent = this.handleEvent.bind(this);
@@ -153,8 +161,9 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
     enableElements(){
         if(this.disabledAttributeMatcher){
             this.setAttribute('attached', '');
-            if(this.qsa(`:not(attached)[${this.disabledAttributeMatcher}]`, this.parentElement).length > 0) return;
-            this.qsa(`[disabled="${this.disabledAttributeMatcher}"]`, this.parentElement).forEach((el:HTMLElement) =>{
+            const parent = getParent( this);
+            if(this.qsa(`:not(attached)[${this.disabledAttributeMatcher}]`, parent).length > 0) return;
+            this.qsa(`[disabled="${this.disabledAttributeMatcher}"]`, parent).forEach((el:HTMLElement) =>{
                 el.removeAttribute('disabled');
             })
         }
@@ -167,6 +176,7 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
 
 
     handleEvent(e: Event) {
+
         const bundledHandlers = this['xtal-in-curry'][e.type] as AddEventListener[];
         bundledHandlers.forEach(subscriber => {
             const target = e.target;
@@ -226,12 +236,12 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
         }
     }
     disconnect() {
-        const parent = this.parentElement;
+        const parent = getParent(this);
         let bundledAllHandlers = parent[canonicalTagName_XtalInCurry];
         const bundledHandlersForSingleEventType = bundledAllHandlers[this._on] as CustomEvent[];
         this.removeElement(bundledHandlersForSingleEventType, this);
         if (bundledHandlersForSingleEventType.length === 0) {
-            this.parentElement.removeEventListener(this._on, this.handleEvent);
+            parent.removeEventListener(this._on, this.handleEvent);
         }
 
     }

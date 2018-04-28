@@ -2,7 +2,7 @@ import { XtalCustomEvent, IXtalInDetailProperties, registerTagName } from './cus
 
 const defaultTagName_xtal_in_children = 'observe-children';
 const canonicalTagName_xtal_in_children = 'xtal-in-children';
-const watchSubtree = 'watch-subtree'
+const watchSubtree = 'watch-subtree';
 class ObserveChildren extends XtalCustomEvent{
     constructor(){
         super();
