@@ -78,8 +78,8 @@ class XtalBinder extends AddEventListener implements IXtalBinderProperties{
         
     }
     _lastEvent: any;
-    setValue(val, e: Event){
-        super.setValue(val, e);
+    setReceipt(val, e: Event){
+        super.setReceipt(val, e);
         this._lastEvent = e;
         this.cascade(e, this.parentElement);
     }

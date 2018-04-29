@@ -124,7 +124,9 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
                 const parent = getParent(this);
                 let bundledAllHandlers = parent[canonicalTagName_XtalInCurry];
                 if (this._on) {
-
+                    if(!this._boundEventHandler){
+                        this._boundEventHandler = this.handleEvent.bind(parent);
+                    }
                     if (!bundledAllHandlers) {
 
                         bundledAllHandlers = parent[canonicalTagName_XtalInCurry] = {};
@@ -132,7 +134,7 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
                     let bundledHandlersForSingleEventType = bundledAllHandlers[this._on];
                     if (!bundledHandlersForSingleEventType) {
                         bundledHandlersForSingleEventType = bundledAllHandlers[this._on] = [];
-                        parent.addEventListener(this._on, this.handleEvent);
+                        parent.addEventListener(this._on, this._boundEventHandler);
                     }
                     bundledHandlersForSingleEventType.push(this);
                     //this._boundHandleEvent = this.handleEvent.bind(this);
@@ -174,7 +176,7 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
     }
 
 
-
+    _boundEventHandler;
     handleEvent(e: Event) {
 
         const bundledHandlers = this['xtal-in-curry'][e.type] as AddEventListener[];
@@ -213,10 +215,25 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
                 }
                 subscriber.detail = eventObj;
             }else{
-                subscriber.detail = Object.assign({}, e['detail']);
+                const detail = e['detail'];
+                switch(typeof(detail)){
+                    case 'object':
+                        subscriber.detail = Object.assign({}, detail);
+                        break;
+                    default:
+                        subscriber.detail = detail;
+                }
+                
             }
-            const value = Object.assign({}, subscriber.detail);
-            subscriber.setValue(value, e);
+            let receipt;
+            switch(typeof(subscriber.detail)){
+                case 'object':
+                    receipt = Object.assign({}, subscriber.detail);
+                default:
+                    receipt = subscriber.detail;
+            }
+            
+            subscriber.setReceipt(receipt, e);
             // if(subscriber.cascadeDown){
             //     subscriber.propagateDown();
             // }
@@ -240,10 +257,12 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
         let bundledAllHandlers = parent[canonicalTagName_XtalInCurry];
         const bundledHandlersForSingleEventType = bundledAllHandlers[this._on] as CustomEvent[];
         this.removeElement(bundledHandlersForSingleEventType, this);
-        if (bundledHandlersForSingleEventType.length === 0) {
-            parent.removeEventListener(this._on, this.handleEvent);
+        // if (bundledHandlersForSingleEventType.length === 0) {
+        //     parent.removeEventListener(this._on, this.handleEvent);
+        // }
+        if (bundledHandlersForSingleEventType.length === 0 && this._boundEventHandler) {
+            parent.removeEventListener(this._on, this._boundEventHandler);
         }
-
     }
     connectedCallback() {
         super.connectedCallback();

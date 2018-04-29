@@ -42,7 +42,7 @@ class MatchMedia extends XtalCustomEvent {
             this.removeAttribute(matchesMediaQuery);
         }
         this.detail = e;
-        this.setValue(e.matches, null);
+        this.setReceipt(e.matches, null);
     }
     connectedCallback() {
         this._upgradeProperties(['mediaQueryString']);

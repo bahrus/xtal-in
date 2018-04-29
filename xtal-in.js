@@ -6,6 +6,7 @@ const canonicalTagName = 'xtal-in-detail';
 const bubbles = 'bubbles';
 const composed = 'composed';
 const dispatch = 'dispatch';
+const disabled = 'disabled';
 const detail = 'detail';
 const event_name = 'event-name';
 const debounce_duration = 'debounce-duration';
@@ -59,6 +60,17 @@ class XtalCustomEvent extends HTMLElement {
         }
         else {
             this.removeAttribute(composed);
+        }
+    }
+    get disabled() {
+        return this._disabled || this.hasAttribute(disabled);
+    }
+    set disabled(val) {
+        if (val) {
+            this.setAttribute(disabled, '');
+        }
+        else {
+            this.removeAttribute(disabled);
         }
     }
     get dispatch() {
@@ -136,7 +148,7 @@ class XtalCustomEvent extends HTMLElement {
     get value() {
         return this._value;
     }
-    setValue(val) {
+    setValue(val, e) {
         this._value = val;
         const newEvent = new CustomEvent('value-changed', {
             detail: {
@@ -148,7 +160,7 @@ class XtalCustomEvent extends HTMLElement {
         this.dispatchEvent(newEvent);
     }
     onPropsChange() {
-        if (!this._dispatch || !this._detail || (!this.eventName))
+        if (!this._dispatch || !this._detail || (!this.eventName) || this.disabled)
             return;
         if (this._debounceFunction) {
             this._debounceFunction();
@@ -164,8 +176,8 @@ class XtalCustomEvent extends HTMLElement {
             composed: this.composed
         });
         this.dispatchEvent(newEvent);
-        if (!this._isSubClass) {
-            this.setValue(newEvent.detail);
+        if (!this._isSubClass && newEvent.detail) {
+            this.setValue(newEvent.detail.value, newEvent);
         }
     }
     // set isSubClass(val){
@@ -183,11 +195,8 @@ class XtalCustomEvent extends HTMLElement {
             }
         });
     }
-    snakeToCamel(s) {
-        return s.replace(/(\-\w)/g, function (m) { return m[1].toUpperCase(); });
-    }
     connectedCallback() {
-        this._upgradeProperties(XtalCustomEvent.observedAttributes.map(attrib => this.snakeToCamel(attrib)));
+        this._upgradeProperties(XtalCustomEvent.observedAttributes.map(attrib => snakeToCamel(attrib)));
     }
     attributeChangedCallback(name, oldValue, newValue) {
         switch (name) {
@@ -195,7 +204,8 @@ class XtalCustomEvent extends HTMLElement {
             case bubbles:
             case dispatch:
             case composed:
-                this['_' + this.snakeToCamel(name)] = newValue !== null;
+            case disabled:
+                this['_' + snakeToCamel(name)] = newValue !== null;
                 break;
             case detail:
                 this._detail = this.zoom(JSON.parse(newValue));
@@ -212,32 +222,20 @@ class XtalCustomEvent extends HTMLElement {
         this.onPropsChange();
     }
 }
-function registerTagNameForRealz(defaultTagName, cls) {
-    // const scTagName = 'npm_xtal_in_' +  defaultTagName.split('-').join('_');
-    let tagName = defaultTagName;
-    // const linkRef = self[scTagName] as HTMLLinkElement;
-    // if(linkRef && linkRef.dataset.as){
-    //     tagName = linkRef.dataset.as;
-    // }
-    const was = document.head.querySelector(`[data-was="${defaultTagName}"][data-package="npm.xtal-in"]`);
-    if (was) {
-        const is = was.dataset.is;
-        if (is)
-            tagName = is;
-    }
-    if (customElements.get(tagName))
+function registerTagName(defaultTagName, cls) {
+    const h = document.head;
+    if (!h)
         return;
+    const scTagName = 'xtalIn' + snakeToCamel(defaultTagName) + 'Alias';
+    let tagName = defaultTagName;
+    const alias = h.dataset[scTagName];
+    if (alias) {
+        tagName = alias;
+    }
     customElements.define(tagName, cls);
 }
-function registerTagName(defaultTagName, cls) {
-    if (document.readyState !== "loading") {
-        registerTagNameForRealz(defaultTagName, cls);
-    }
-    else {
-        document.addEventListener("DOMContentLoaded", e => {
-            registerTagNameForRealz(defaultTagName, cls);
-        });
-    }
+function snakeToCamel(s) {
+    return s.replace(/(\-\w)/g, function (m) { return m[1].toUpperCase(); });
 }
 if (!customElements.get(canonicalTagName)) {
     registerTagName(defaultTagName, XtalCustomEvent);
@@ -286,7 +284,7 @@ class ObserveAttributes extends XtalCustomEvent {
                 };
             });
             const attribs = this.filter ? this.getValues(this.filter) : this._child.attributes;
-            this.setValue(attribs);
+            this.setValue(attribs, null);
         });
         this._observer.observe(this._child, config);
     }
@@ -333,7 +331,8 @@ class ObserveChildren extends XtalCustomEvent {
         return super.observedAttributes.concat([watchSubtree]);
     }
     get watchSubtree() {
-        return this._watchSubtree;
+        return this.hasAttribute(watchSubtree);
+        ;
     }
     set watchSubtree(val) {
         if (val) {
@@ -358,24 +357,18 @@ class ObserveChildren extends XtalCustomEvent {
             this._observer.disconnect();
     }
     addMutationObserver() {
-        var config = { childList: true, subtree: this._watchSubtree };
+        const config = { childList: true, subtree: this._watchSubtree };
         this._observer = new MutationObserver((mutationsList) => {
-            mutationsList.forEach(mutation => {
-                this.detail = {
-                    mutation
-                };
-            });
+            this.detail = mutationsList;
             this._mutationCount++;
-            this.setValue(this._mutationCount);
+            this.setValue(this._mutationCount, null);
         });
-        this.detail = {
-            status: 'observing'
-        };
-        this.setValue(this._mutationCount);
-        this._observer.observe(this, config);
+        this.setValue(this._mutationCount, null);
+        this._observer.observe(this.parentElement, config);
     }
     connectedCallback() {
         super.connectedCallback();
+        this.disconnect();
         this.addMutationObserver();
     }
     disconnedCallback() {
@@ -387,20 +380,87 @@ class XtalInChildren extends ObserveChildren {
 }
 customElements.define(canonicalTagName_xtal_in_children, XtalInChildren);
 //# sourceMappingURL=observe-children.js.map
+const mediaQueryString = 'media-query-string';
+const canonicalTagName_XtalInMedia = 'xtal-in-media';
+const matchesMediaQuery = 'matches-media-query';
+class MatchMedia extends XtalCustomEvent {
+    static get is() { return 'match-media'; }
+    get mediaQueryString() {
+        return this._mediaQueryString;
+    }
+    set mediaQueryString(val) {
+        this.setAttribute(mediaQueryString, val);
+    }
+    static get observedAttributes() {
+        return [
+            mediaQueryString,
+        ];
+    }
+    attributeChangedCallback(name, oldValue, newValue) {
+        switch (name) {
+            case mediaQueryString:
+                this.disconnect();
+                this._mediaQueryString = newValue;
+                if (newValue !== null) {
+                    this._mql = window.matchMedia(this._mediaQueryString);
+                    this._boundMediaQueryHandler = this.handleMediaQueryChange.bind(this);
+                    this.connect();
+                }
+        }
+    }
+    connect() {
+        this._mql.addListener(this._boundMediaQueryHandler);
+    }
+    disconnect() {
+        if (this._mql)
+            this._mql.removeListener(this._boundMediaQueryHandler);
+    }
+    handleMediaQueryChange(e) {
+        if (e.matches) {
+            this.setAttribute(matchesMediaQuery, '');
+        }
+        else {
+            this.removeAttribute(matchesMediaQuery);
+        }
+        this.detail = e;
+        this.setValue(e.matches, null);
+    }
+    connectedCallback() {
+        this._upgradeProperties(['mediaQueryString']);
+    }
+    disconnectedCallback() {
+        this.disconnect();
+    }
+}
+if (!customElements.get(canonicalTagName_XtalInMedia)) {
+    registerTagName(MatchMedia.is, MatchMedia);
+    class XtalInMedia extends MatchMedia {
+    }
+    customElements.define(canonicalTagName_XtalInMedia, XtalInMedia);
+}
+//# sourceMappingURL=match-media.js.map
 const stopPropagation = 'stop-propagation';
 const on = 'on';
 const ifMatches = 'if-matches';
 const valueProps = 'value-props';
-const cascadeDown = 'cascade-down';
+const disabledAttributeMatcher = 'disabled-attribute-matcher';
+//const cascadeDown = 'cascade-down';
 const defaultTagName_addEventListener = 'add-event-listener';
 const canonicalTagName_XtalInCurry = 'xtal-in-curry';
+function getParent(el) {
+    const parent = el.parentNode;
+    if (parent.nodeType === 11) {
+        return parent['host'];
+    }
+    return parent;
+}
 class AddEventListener extends XtalCustomEvent {
     constructor() {
         super();
         this._isSubClass = true;
     }
     get stopPropagation() {
-        return this._stopPropagation;
+        return this._stopPropagation || this.hasAttribute(stopPropagation);
     }
     set stopPropagation(val) {
         if (val) {
@@ -410,6 +470,17 @@ class AddEventListener extends XtalCustomEvent {
             this.removeAttribute(stopPropagation);
         }
     }
+    get disabledAttributeMatcher() {
+        return this._disabledAttributeMatcher || this.getAttribute(disabledAttributeMatcher);
+    }
+    set(val) {
+        if (val) {
+            this.setAttribute(disabledAttributeMatcher, '');
+        }
+        else {
+            this.removeAttribute(disabledAttributeMatcher);
+        }
+    }
     get on() {
         return this._on;
     }
@@ -417,28 +488,24 @@ class AddEventListener extends XtalCustomEvent {
         this.setAttribute(on, val);
     }
     get ifMatches() {
-        return this._ifMatches;
+        return this._ifMatches || this.getAttribute(ifMatches);
     }
     set ifMatches(val) {
         this.setAttribute(ifMatches, val);
     }
     get valueProps() {
-        return this._valueProps;
+        return this._valueProps || this.getAttribute(valueProps);
     }
     set valueProps(val) {
         this.setAttribute(valueProps, val.toString());
     }
-    get cascadeDown() {
-        return this.getAttribute(cascadeDown);
-    }
-    set cascadeDown(val) {
-        this.setAttribute(cascadeDown, val);
-    }
     static get observedAttributes() {
-        return super.observedAttributes.concat([stopPropagation, on, ifMatches, valueProps, cascadeDown]);
+        return super.observedAttributes.concat([stopPropagation, on, ifMatches, valueProps, disabledAttributeMatcher]);
+    }
+    qsa(css, from) {
+        return [].slice.call((from ? from : this).querySelectorAll(css));
     }
     attributeChangedCallback(name, oldValue, newValue) {
-        super.attributeChangedCallback(name, oldValue, newValue);
         switch (name) {
             // case href:
             //     this._href = newValue;
@@ -447,26 +514,25 @@ class AddEventListener extends XtalCustomEvent {
                 this._stopPropagation = newValue !== null;
                 break;
             case valueProps:
-                if (newValue === null) {
-                    this._valueProps = null;
-                }
-                else {
-                    if (newValue.startsWith('[')) {
-                        this._valueProps = JSON.parse(newValue);
-                    }
-                    else {
-                        this._valueProps = newValue;
-                    }
-                }
+                this._valueProps = newValue;
+            // if (newValue === null) {
+            //     this._valueProps = null;
+            // } else {
+            //     if (newValue.startsWith('[')) {
+            //         this._valueProps = JSON.parse(newValue);
+            //     } else {
+            //         this._valueProps = newValue;
+            //     }
+            // }
             case ifMatches:
                 this._ifMatches = newValue;
                 break;
-            case cascadeDown:
-                this.propagateDown();
-                break;
+            case disabledAttributeMatcher:
+                this._disabledAttributeMatcher = newValue !== null;
+            //bba
             case on:
                 this._on = newValue;
-                const parent = this.parentElement;
+                const parent = getParent(this);
                 let bundledAllHandlers = parent[canonicalTagName_XtalInCurry];
                 if (this._on) {
                     if (!bundledAllHandlers) {
@@ -475,52 +541,61 @@ class AddEventListener extends XtalCustomEvent {
                     let bundledHandlersForSingleEventType = bundledAllHandlers[this._on];
                     if (!bundledHandlersForSingleEventType) {
                         bundledHandlersForSingleEventType = bundledAllHandlers[this._on] = [];
-                        this.parentElement.addEventListener(this._on, this.handleEvent);
+                        parent.addEventListener(this._on, this.handleEvent);
                     }
                     bundledHandlersForSingleEventType.push(this);
                     //this._boundHandleEvent = this.handleEvent.bind(this);
                     //this.parentElement.addEventListener(this._on, this._boundHandleEvent);
+                    // this.qsa('[xtal-in-able]', parent).forEach((el : HTMLElement) =>{
+                    //     el.removeAttribute('disabled');
+                    // });
+                    this.enableElements();
+                    if (document.readyState === "loading") {
+                        document.addEventListener("DOMContentLoaded", e => {
+                            this.enableElements();
+                            ;
+                        });
+                    }
                 }
                 else {
                     this.disconnect();
                 }
                 break;
         }
+        super.attributeChangedCallback(name, oldValue, newValue);
     }
-    //_boundHandleEvent;
+    enableElements() {
+        if (this.disabledAttributeMatcher) {
+            this.setAttribute('attached', '');
+            const parent = getParent(this);
+            if (this.qsa(`:not(attached)[${this.disabledAttributeMatcher}]`, parent).length > 0)
+                return;
+            this.qsa(`[disabled="${this.disabledAttributeMatcher}"]`, parent).forEach((el) => {
+                el.removeAttribute('disabled');
+            });
+        }
+    }
     modifyEvent(e, subscriber) {
         if (subscriber.stopPropagation)
             e.stopPropagation();
-    }
-    propagateDown() {
-        if (!this.eventName)
-            return;
-        const targetAttr = this.eventName + '-props';
-        const targets = this.parentElement.querySelectorAll('[' + targetAttr + ']');
-        for (let i = 0, ii = targets.length; i < ii; i++) {
-            const target = targets[i];
-            const props = target.getAttribute(targetAttr).split(',');
-            props.forEach(prop => {
-                target[prop] = this.value;
-            });
-        }
     }
     handleEvent(e) {
         const bundledHandlers = this['xtal-in-curry'][e.type];
         bundledHandlers.forEach(subscriber => {
             const target = e.target;
-            if (subscriber._ifMatches) {
-                if (!target.matches(subscriber._ifMatches))
+            if (subscriber.ifMatches) {
+                if (!target.matches(subscriber.ifMatches))
                     return;
             }
             subscriber.modifyEvent(e, subscriber);
-            if (this._valueProps) {
+            if (this.valueProps) {
                 let values;
                 let hasMultipleValues = false;
-                if (Array.isArray(this._valueProps)) {
+                if (this.valueProps.indexOf(',') > -1) {
                     hasMultipleValues = true;
                     values = {};
-                    this._valueProps.forEach(prop => {
+                    const parsedValueProps = this.valueProps.split(',');
+                    parsedValueProps.forEach(prop => {
                         values[prop] = target[prop];
                     });
                 }
@@ -528,9 +603,9 @@ class AddEventListener extends XtalCustomEvent {
                     values = target[this._valueProps];
                 }
                 const eventObj = {};
-                if (subscriber._zoomedDetail) {
-                    eventObj.context = subscriber._zoomedDetail;
-                }
+                // if(subscriber._zoomedDetail){
+                //     eventObj.context = subscriber._zoomedDetail
+                // }
                 if (values) {
                     if (hasMultipleValues) {
                         eventObj.values = values;
@@ -538,17 +613,21 @@ class AddEventListener extends XtalCustomEvent {
                     else {
                         eventObj.value = values;
                     }
+                    eventObj.context = e['detail'];
+                }
+                else {
+                    Object.assign(eventObj, e['detail']);
                 }
                 subscriber.detail = eventObj;
             }
             else {
-                subscriber.detail = subscriber._zoomedDetail;
+                subscriber.detail = Object.assign({}, e['detail']);
             }
             const value = Object.assign({}, subscriber.detail);
-            subscriber.setValue(value);
-            if (subscriber.cascadeDown) {
-                subscriber.propagateDown();
-            }
+            subscriber.setValue(value, e);
+            // if(subscriber.cascadeDown){
+            //     subscriber.propagateDown();
+            // }
         });
         //this.dispatch = true;
         // window.requestAnimationFrame(() => {
@@ -563,12 +642,12 @@ class AddEventListener extends XtalCustomEvent {
         }
     }
     disconnect() {
-        const parent = this.parentElement;
+        const parent = getParent(this);
         let bundledAllHandlers = parent[canonicalTagName_XtalInCurry];
         const bundledHandlersForSingleEventType = bundledAllHandlers[this._on];
         this.removeElement(bundledHandlersForSingleEventType, this);
         if (bundledHandlersForSingleEventType.length === 0) {
-            this.parentElement.removeEventListener(this._on, this.handleEvent);
+            parent.removeEventListener(this._on, this.handleEvent);
         }
     }
     connectedCallback() {

@@ -6,7 +6,7 @@ export interface IXtalInDetailProperties {
     dispatch: boolean,
     detail: any,
     eventName: string,
-    value: any,
+    receipt: any,
     debounceDuration: number,
 }
 
@@ -160,12 +160,12 @@ export class XtalCustomEvent extends HTMLElement implements IXtalInDetailPropert
         return this.zoomInObject(this.zoomOutObject(obj));
     }
     _value: any;
-    get value(){
+    get receipt(){
         return this._value;
     }
-    setValue(val, e: Event){
+    setReceipt(val, e: Event){
         this._value = val;
-        const newEvent = new CustomEvent('value-changed', {
+        const newEvent = new CustomEvent('receipt-changed', {
             detail: {
                 value: val
             },
@@ -195,7 +195,7 @@ export class XtalCustomEvent extends HTMLElement implements IXtalInDetailPropert
         } as CustomEventInit);
         this.dispatchEvent(newEvent);
         if(!this._isSubClass && newEvent.detail){
-            this.setValue(newEvent.detail.value, newEvent);
+            this.setReceipt(newEvent.detail.value, newEvent);
         }
     }
 

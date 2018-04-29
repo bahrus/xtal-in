@@ -95,13 +95,16 @@ export class AddEventListener extends XtalCustomEvent {
                 const parent = getParent(this);
                 let bundledAllHandlers = parent[canonicalTagName_XtalInCurry];
                 if (this._on) {
+                    if (!this._boundEventHandler) {
+                        this._boundEventHandler = this.handleEvent.bind(parent);
+                    }
                     if (!bundledAllHandlers) {
                         bundledAllHandlers = parent[canonicalTagName_XtalInCurry] = {};
                     }
                     let bundledHandlersForSingleEventType = bundledAllHandlers[this._on];
                     if (!bundledHandlersForSingleEventType) {
                         bundledHandlersForSingleEventType = bundledAllHandlers[this._on] = [];
-                        parent.addEventListener(this._on, this.handleEvent);
+                        parent.addEventListener(this._on, this._boundEventHandler);
                     }
                     bundledHandlersForSingleEventType.push(this);
                     //this._boundHandleEvent = this.handleEvent.bind(this);
@@ -181,10 +184,23 @@ export class AddEventListener extends XtalCustomEvent {
                 subscriber.detail = eventObj;
             }
             else {
-                subscriber.detail = Object.assign({}, e['detail']);
+                const detail = e['detail'];
+                switch (typeof (detail)) {
+                    case 'object':
+                        subscriber.detail = Object.assign({}, detail);
+                        break;
+                    default:
+                        subscriber.detail = detail;
+                }
             }
-            const value = Object.assign({}, subscriber.detail);
-            subscriber.setValue(value, e);
+            let receipt;
+            switch (typeof (subscriber.detail)) {
+                case 'object':
+                    receipt = Object.assign({}, subscriber.detail);
+                default:
+                    receipt = subscriber.detail;
+            }
+            subscriber.setReceipt(receipt, e);
             // if(subscriber.cascadeDown){
             //     subscriber.propagateDown();
             // }
@@ -206,8 +222,11 @@ export class AddEventListener extends XtalCustomEvent {
         let bundledAllHandlers = parent[canonicalTagName_XtalInCurry];
         const bundledHandlersForSingleEventType = bundledAllHandlers[this._on];
         this.removeElement(bundledHandlersForSingleEventType, this);
-        if (bundledHandlersForSingleEventType.length === 0) {
-            parent.removeEventListener(this._on, this.handleEvent);
+        // if (bundledHandlersForSingleEventType.length === 0) {
+        //     parent.removeEventListener(this._on, this.handleEvent);
+        // }
+        if (bundledHandlersForSingleEventType.length === 0 && this._boundEventHandler) {
+            parent.removeEventListener(this._on, this._boundEventHandler);
         }
     }
     connectedCallback() {
