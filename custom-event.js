@@ -142,12 +142,12 @@ export class XtalCustomEvent extends HTMLElement {
             return obj;
         return this.zoomInObject(this.zoomOutObject(obj));
     }
-    get receipt() {
-        return this._value;
+    get result() {
+        return this._result;
     }
-    setReceipt(val, e) {
-        this._value = val;
-        const newEvent = new CustomEvent('receipt-changed', {
+    setResult(val, e) {
+        this._result = val;
+        const newEvent = new CustomEvent('result-changed', {
             detail: {
                 value: val
             },
@@ -174,7 +174,7 @@ export class XtalCustomEvent extends HTMLElement {
         });
         this.dispatchEvent(newEvent);
         if (!this._isSubClass && newEvent.detail) {
-            this.setReceipt(newEvent.detail.value, newEvent);
+            this.setResult(newEvent.detail.value, newEvent);
         }
     }
     // set isSubClass(val){

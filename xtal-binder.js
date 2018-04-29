@@ -61,8 +61,8 @@ class XtalBinder extends AddEventListener {
         // this._cssSelector = this._passTo.substr(0, iPosOfOpenBrace);
         // const propMapperString = this._passTo.substring(iPosOfOpenBrace + 1, this._passTo.length - 1);
     }
-    setReceipt(val, e) {
-        super.setReceipt(val, e);
+    setResult(val, e) {
+        super.setResult(val, e);
         this._lastEvent = e;
         this.cascade(e, this.parentElement);
     }

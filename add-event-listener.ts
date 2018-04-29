@@ -233,7 +233,7 @@ export class AddEventListener extends XtalCustomEvent implements IAddEventListen
                     receipt = subscriber.detail;
             }
             
-            subscriber.setReceipt(receipt, e);
+            subscriber.setResult(receipt, e);
             // if(subscriber.cascadeDown){
             //     subscriber.propagateDown();
             // }

@@ -43,9 +43,9 @@ class ObserveChildren extends XtalCustomEvent{
         this._observer =  new MutationObserver((mutationsList: MutationRecord[]) =>{
             this.detail = mutationsList;
             this._mutationCount++;
-            this.setReceipt(this._mutationCount, null);
+            this.setResult(this._mutationCount, null);
         });
-        this.setReceipt(this._mutationCount, null);
+        this.setResult(this._mutationCount, null);
         this._observer.observe(this.parentElement, config);
     }
 

@@ -200,7 +200,7 @@ export class AddEventListener extends XtalCustomEvent {
                 default:
                     receipt = subscriber.detail;
             }
-            subscriber.setReceipt(receipt, e);
+            subscriber.setResult(receipt, e);
             // if(subscriber.cascadeDown){
             //     subscriber.propagateDown();
             // }

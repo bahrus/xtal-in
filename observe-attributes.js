@@ -39,7 +39,7 @@ class ObserveAttributes extends XtalCustomEvent {
                 };
             });
             const attribs = this.filter ? this.getValues(this.filter) : this._child.attributes;
-            this.setReceipt(attribs, null);
+            this.setResult(attribs, null);
         });
         this._observer.observe(this._child, config);
     }
