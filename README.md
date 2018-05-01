@@ -153,7 +153,7 @@ In addition to listening for click or input events, one can listen for attribute
 
 observe-attributes supports a "filter" attribute/property that can specify an array of specific attributes to watch.
 
-Canonical tag name:  "xtal-in-detail"
+Canonical tag name:  "xtal-in-attributes"
 
 ## Monitoring Children
 
