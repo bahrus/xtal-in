@@ -88,6 +88,16 @@ Perhaps you spotted the flaw:
 
 *Being that custom elements can load asynchronously, what is to guarantee that the elements inside the event listener won't fire events *before* the custom element has attached listeners?*
 
+For example:
+
+```html
+<div>
+    <add-event-listener on="sound" dispatch event-name="falling-tree" bubbles composed></add-event-listner>
+    ...
+    <tunnel-tree name="Pioneer Cabin Tree" orientation="vertical"></tunnel-tree>
+</div>
+```
+
 Unfortunately, we can't.  To prevent this from happening, we can disable those elements, and then enable them after the event handler has been added:
 
 ```html
