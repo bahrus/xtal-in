@@ -11,7 +11,7 @@
     "xtal-in.js"
   ],
   "extraDependencies": [
-    "bower_components\\webcomponentsjs\\*.js"
+    "bower_components/webcomponentsjs/*.js"
   ],
   "builds": [
     {
@@ -34,5 +34,5 @@
       "polymer-2"
     ]
   },
-  "moduleResolution": "none"
+  "moduleResolution": "node"
 }
