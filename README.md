@@ -1,5 +1,7 @@
 [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/bahrus/xtal-in)
 
+<a href="https://nodei.co/npm/xtal-in/"><img src="https://nodei.co/npm/xtal-in.png"></a>
+
 # \<xtal-in\>
 
 \<xtal-in\> is a vanilla-ish custom element that generates events with semantically meaningful, and even unique, discoverable event names.  
@@ -49,13 +51,13 @@ You can also specify a test on the element spawning the event, using the if-matc
 </div>
 ```
 
-## Monitoring Attribute Changes
+## Monitoring Attribute Changes [TODO]
 
 
 In addition to listening for click or input events, one can listen for attribute change events:
 
 ```html
-<david-byrne beautiful-wife="Adelle Lutz" data-dispatch-when-attributes-mutate="beautiful-wife: to:once-in-a-lifetime"></david-byrne>
+<david-byrne beautiful-wife="Adelle Lutz" data-dispatch-when-attributes-mutate="beautiful-wife: type:once-in-a-lifetime"></david-byrne>
 ```
 
 ## Install the Polymer-CLI

@@ -1,0 +1,15 @@
+(function(){function getHost(el){let parent=el;while(parent=parent.parentNode){if(11===parent.nodeType){return parent.host}else if("BODY"===parent.tagName){return null}}return null}function observeCssSelector(superClass){const eventNames=["animationstart","MSAnimationStart","webkitAnimationStart"];return class extends superClass{addCSSListener(id,targetSelector,insertListener){if(this._boundInsertListener)return;const style=document.createElement("style");style.innerHTML=`
+            @keyframes ${id} {
+                from {
+                    opacity: 0.99;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+    
+            ${targetSelector}{
+                animation-duration: 0.001s;
+                animation-name: ${id};
+            }
+            `;const host=getHost(this);if(null!==host){host.shadowRoot.appendChild(style)}else{document.body.appendChild(style)}this._boundInsertListener=insertListener.bind(this);const container=host?host.shadowRoot:document;eventNames.forEach(name=>{container.addEventListener(name,this._boundInsertListener,!1)})}disconnectedCallback(){if(this._boundInsertListener){const host=getHost(this),container=host?host.shadowRoot:document;eventNames.forEach(name=>{container.removeEventListener(name,this._boundInsertListener)})}if(super.disconnectedCallback!==void 0)super.disconnectedCallback()}}}class XtalIn extends observeCssSelector(HTMLElement){static get is(){return"xtal-in"}connectedCallback(){this.style.display="none";this._conn=!0;this.onPropsChange()}insertListener(e){if(e.animationName===XtalIn.is){const target=e.target;setTimeout(()=>{this.addWatch(target)},0)}}onPropsChange(){if(!this._conn)return;this.addCSSListener(XtalIn.is,`[data-dispatch-on]`,this.insertListener)}toLHSRHS(s){const pos=s.indexOf(":");return{lhs:s.substr(0,pos),rhs:s.substr(pos+1)}}_hndEv(e){const ct=e.currentTarget||e.target,eRules=ct.__xtlinRules[e.type];eRules.forEach(rule=>{if(!rule.noblock)e.stopPropagation();const evt=new CustomEvent(rule.type,{bubbles:rule.bubbles,composed:rule.composed,detail:e.detail});ct.dispatchEvent(evt)})}addWatch(target){const attr=target.dataset.dispatchOn,rules={};let rule;attr.split(" ").forEach(tkn=>{const token=tkn.trim();if(token.endsWith(":")){const evtName=token.substr(0,token.length-1);if(!rules[evtName])rules[evtName]=[];rule={};rules[evtName].push(rule)}else{if(token.startsWith("if(")){rule.if=token.substring(3,token.length-1)}else{switch(token){case"bubbles":case"composed":case"noblock":rule[token]=!0;break;default:if(token.startsWith("if(")){rule.if=token.substring(3,token.length-1)}else{const lhsRHS=this.toLHSRHS(token);switch(lhsRHS.lhs){case"type":rule.type=lhsRHS.rhs;break;}}}}}});target.__xtlinRules=rules;for(var t in rules){target.addEventListener(t,this._hndEv)}}}(function(custEl){let tagName=custEl.is;if(customElements.get(tagName)){console.warn("Already registered "+tagName);return}customElements.define(tagName,custEl)})(XtalIn)})();

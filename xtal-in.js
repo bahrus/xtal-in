@@ -32,6 +32,8 @@ export class XtalIn extends observeCssSelector(HTMLElement) {
         const ct = (e.currentTarget || e.target);
         const eRules = ct.__xtlinRules[e.type];
         eRules.forEach(rule => {
+            if (!rule.noblock)
+                e.stopPropagation();
             const evt = new CustomEvent(rule.type, {
                 bubbles: rule.bubbles,
                 composed: rule.composed,
