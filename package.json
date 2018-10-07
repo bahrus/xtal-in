@@ -1,6 +1,6 @@
 {
   "name": "xtal-in",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/bahrus/xtal-in)",
   "main": "xtal-in.js",
   "dependencies": {
