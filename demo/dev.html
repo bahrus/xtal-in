@@ -9,12 +9,15 @@
 <body>
     <xtal-in></xtal-in>
 
-    <button data-dispatch-on="click: type:testing bubbles">click</button>
+    <button data-dispatch-on="click: type:testing bubbles" data-dispatch-on-attr-change="period: type:test2 bubbles">click</button>
     <script type="module" src="../xtal-in.js"></script>
 </body>
 <script>
     document.body.addEventListener('testing', e =>{
         console.log(e);
-    })
+    });
+    document.body.addEventListener('test2', e=>{
+        console.log(e);
+    });
 </script>
 </html>

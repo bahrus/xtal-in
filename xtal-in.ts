@@ -10,7 +10,8 @@ interface IEventRule {
     //lastEvent?: Event;
 }
 interface IXtalInEl extends HTMLElement{
-    __xtlinRules: { [key: string]: IEventRule[] };
+    __xtlinERules: { [key: string]: IEventRule[] };
+    __xtlinAtRules: { [key: string]: IEventRule[] };
 }
 
 export class XtalIn extends observeCssSelector(HTMLElement) {
@@ -34,7 +35,7 @@ export class XtalIn extends observeCssSelector(HTMLElement) {
     }
     onPropsChange() {
         if (!this._conn) return;
-        this.addCSSListener(XtalIn.is, `[data-dispatch-on]`, this.insertListener);
+        this.addCSSListener(XtalIn.is, `[data-dispatch-on],[data-dispatch-on-attr-change]`, this.insertListener);
     }
     toLHSRHS(s: string) {
         const pos = s.indexOf(':');
@@ -45,7 +46,7 @@ export class XtalIn extends observeCssSelector(HTMLElement) {
     }
     _hndEv(e: Event) {
         const ct = (e.currentTarget || e.target) as IXtalInEl;
-        const eRules = ct.__xtlinRules[e.type];
+        const eRules = ct.__xtlinERules[e.type];
         eRules.forEach(rule =>{
             if(!rule.noblock) e.stopPropagation();
             const evt = new CustomEvent(rule.type!, {
@@ -56,8 +57,7 @@ export class XtalIn extends observeCssSelector(HTMLElement) {
             ct.dispatchEvent(evt);
         });
     }
-    addWatch(target: IXtalInEl) {
-        const attr = target.dataset.dispatchOn!;
+    parseAttr(attr: string){
         const rules: { [key: string]: IEventRule[] } = {};
         let rule: IEventRule;
         attr.split(' ').forEach(tkn => {
@@ -94,10 +94,42 @@ export class XtalIn extends observeCssSelector(HTMLElement) {
                 }
             }
         })
-        target.__xtlinRules = rules;
-        for(var t in rules){
+        return rules;
+    }
+    addWatch(target: IXtalInEl) {
+        const onAtr = target.dataset.dispatchOn!;
+        const evRules = this.parseAttr(onAtr);
+        target.__xtlinERules = evRules;
+        for(var t in evRules){
             target.addEventListener(t, this._hndEv);
         }
+        const dispOn = target.dataset.dispatchOnAttrChange;
+        if(dispOn === undefined) return;
+        const atRules = this.parseAttr(dispOn);
+        const keys = Object.keys(atRules);
+        if(keys.length === 0) return;
+        const config = {
+            attributes: true,
+            attributeFilter: keys
+        } as MutationObserverInit;
+        target.__xtlinAtRules = atRules; 
+        const observer = new MutationObserver(mutationRecords => {
+            
+            mutationRecords.forEach(rec =>{
+                target.__xtlinAtRules[rec.attributeName as string].forEach(rule =>{
+                    const evt = new CustomEvent(rule.type!, {
+                        bubbles: rule.bubbles,
+                        composed: rule.composed,
+                        detail: {
+                            attributeName: rec.attributeName
+                        }
+                    });
+                    target.dispatchEvent(evt);
+                })
+            })
+            
+        });
+        observer.observe(target, config); 
     }
 }
 define(XtalIn);

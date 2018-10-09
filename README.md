@@ -57,7 +57,7 @@ You can also specify a test on the element spawning the event, using the if-matc
 In addition to listening for click or input events, one can listen for attribute change events:
 
 ```html
-<david-byrne beautiful-wife="Adelle Lutz" data-dispatch-when-attributes-mutate="beautiful-wife: type:once-in-a-lifetime"></david-byrne>
+<david-byrne beautiful-wife="Adelle Lutz" data-dispatch-on-attr-change="beautiful-wife: type:once-in-a-lifetime"></david-byrne>
 ```
 
 ## Install the Polymer-CLI
