@@ -33,7 +33,7 @@ function (_observeCssSelector) {
     key: "onPropsChange",
     value: function onPropsChange() {
       if (!this._conn) return;
-      this.addCSSListener(XtalIn.is, "[data-dispatch-on]", this.insertListener);
+      this.addCSSListener(XtalIn.is, "[data-dispatch-on],[data-dispatch-on-attr-change]", this.insertListener);
     }
   }, {
     key: "toLHSRHS",
@@ -48,7 +48,7 @@ function (_observeCssSelector) {
     key: "_hndEv",
     value: function _hndEv(e) {
       var ct = e.currentTarget || e.target;
-      var eRules = ct.__xtlinRules[e.type];
+      var eRules = ct.__xtlinERules[e.type];
       eRules.forEach(function (rule) {
         if (!rule.noblock) e.stopPropagation();
         var evt = new CustomEvent(rule.type, {
@@ -60,11 +60,10 @@ function (_observeCssSelector) {
       });
     }
   }, {
-    key: "addWatch",
-    value: function addWatch(target) {
+    key: "parseAttr",
+    value: function parseAttr(attr) {
       var _this2 = this;
 
-      var attr = target.dataset.dispatchOn;
       var rules = {};
       var rule;
       attr.split(' ').forEach(function (tkn) {
@@ -103,11 +102,45 @@ function (_observeCssSelector) {
           }
         }
       });
-      target.__xtlinRules = rules;
+      return rules;
+    }
+  }, {
+    key: "addWatch",
+    value: function addWatch(target) {
+      var onAtr = target.dataset.dispatchOn;
+      var evRules = this.parseAttr(onAtr);
+      target.__xtlinERules = evRules;
 
-      for (var t in rules) {
+      for (var t in evRules) {
         target.addEventListener(t, this._hndEv);
       }
+
+      var dispOn = target.dataset.dispatchOnAttrChange;
+      if (dispOn === undefined) return;
+      var atRules = this.parseAttr(dispOn);
+      var keys = Object.keys(atRules);
+      if (keys.length === 0) return;
+      var config = {
+        attributes: true,
+        attributeFilter: keys
+      };
+      target.__xtlinAtRules = atRules;
+      var observer = new MutationObserver(function (mutationRecords) {
+        mutationRecords.forEach(function (rec) {
+          target.__xtlinAtRules[rec.attributeName].forEach(function (rule) {
+            var evt = new CustomEvent(rule.type, {
+              bubbles: rule.bubbles,
+              composed: rule.composed,
+              detail: {
+                attributeName: rec.attributeName,
+                attributeVal: target.getAttribute(rec.attributeName)
+              }
+            });
+            target.dispatchEvent(evt);
+          });
+        });
+      });
+      observer.observe(target, config);
     }
   }], [{
     key: "is",

@@ -51,7 +51,7 @@ You can also specify a test on the element spawning the event, using the if-matc
 </div>
 ```
 
-## Monitoring Attribute Changes [TODO]
+## Monitoring Attribute Changes
 
 
 In addition to listening for click or input events, one can listen for attribute change events:

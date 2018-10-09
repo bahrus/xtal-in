@@ -109,7 +109,8 @@ export class XtalIn extends observeCssSelector(HTMLElement) {
                         bubbles: rule.bubbles,
                         composed: rule.composed,
                         detail: {
-                            attributeName: rec.attributeName
+                            attributeName: rec.attributeName,
+                            attributeVal: target.getAttribute(rec.attributeName)
                         }
                     });
                     target.dispatchEvent(evt);
