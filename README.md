@@ -4,7 +4,7 @@
 
 # \<xtal-in\>
 
-\<xtal-in\> is a vanilla-ish custom element that generates events with semantically meaningful, and even unique, discoverable event names.  
+\<xtal-in\> is a vanilla-ish custom element that generates events with semantically meaningful event names.  
 
 The -in- in xtal-in- refers to an "input channel" -- which can be a clickable dom element, for example, or more abstract things like attributes changing.
 
@@ -18,11 +18,11 @@ Adding an event listener to an element, whose sole purpose is to bubble the even
 
 
 ```html
-<xtal-in></xtal-in>
+<xtal-in click></xtal-in>
 
 <div>
 ...
-<button data-dispatch-on="click: type:wtf bubbles composed noblock">How did I get here?</button>
+<button data-dispatch-onclick="wtf bubbles composed noblock">How did I get here?</button>
 ...
 </div>
 <script>
@@ -38,7 +38,9 @@ By default, xtal-in blocks the original event from propagating is optional, and 
 You can also specify a test on the element spawning the event, using the if-matches attribute, which uses matches() [under the hood](https://developer.mozilla.org/en-US/docs/Web/API/Element/matches):
 
 ```html
-<div data-dispatch-on="
+<xtal-in click input></xtal-in>
+...
+<div data-dispatch-onclick="
     click: if(#talkingButton) type:¯\_(ツ)_/¯ bubbles composed
     input: if(#large_automobile) type:behind-the-wheel
 ">
