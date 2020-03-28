@@ -7,11 +7,9 @@
     "xtal-latx": "0.0.88"
   },
   "devDependencies": {
-    "@webcomponents/webcomponentsjs": "2.2.10",
-    "jiife": "0.0.12",
+    "@webcomponents/webcomponentsjs": "2.4.3",
     "tape": "4.10.2",
-    "@types/tape": "4.2.33",
-    "xtal-test": "0.0.19"
+    "xtal-test": "0.0.44"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
